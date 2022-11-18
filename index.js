@@ -599,7 +599,9 @@ class SuperExpressive {
       `\n(Try adding a .end() call to match the "${this[getCurrentFrame]().type.type}")\n`
     );
 
-    const pattern = this[getCurrentElementArray]().map(SuperExpressive[evaluate]).join('');
+      let newVar = this[getCurrentElementArray]();
+      console.log('newVar = ', newVar)
+      const pattern = newVar.map(SuperExpressive[evaluate]).join('');
     const flags = Object.entries(this.state.flags).map(([name, isOn]) => isOn ? name : '');
 
     return {
@@ -623,7 +625,11 @@ class SuperExpressive {
   }
 
   [getCurrentElementArray]() {
-    return this[getCurrentFrame]().elements;
+    let currentFrame = this[getCurrentFrame]();
+    let elements = currentFrame.elements;
+    console.log('currentFrame = ', currentFrame)
+    console.log('elements = ', elements)
+    return elements;
   }
 
   [clone]() {
