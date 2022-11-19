@@ -10,38 +10,36 @@ class SuperExpressiveTest {
 
     @Test
     fun tests() {
-        testRegexEquality("(?:)", SuperExpressive())
+//        testRegexEquality("(?:)", SuperExpressive())
+//
+//        testRegexEquality("(?:)", SuperExpressive().dotMatchesAll(), setOf(RegexOption.DOT_MATCHES_ALL))
+//        testRegexEquality("(?:)", SuperExpressive().caseInsensitive(), setOf(RegexOption.IGNORE_CASE))
+//        testRegexEquality("(?:)", SuperExpressive().multiline(), setOf(RegexOption.MULTILINE))
+//        testRegexEquality("(?:)", SuperExpressive().unixLines(), setOf(RegexOption.UNIX_LINES))
+//
+//        testRegexEquality(".", SuperExpressive().anyChar())
+//        testRegexEquality("\\s", SuperExpressive().whitespaceChar())
+//        testRegexEquality("\\S", SuperExpressive().nonWhitespaceChar())
+//        testRegexEquality("\\d", SuperExpressive().digit())
+//        testRegexEquality("\\D", SuperExpressive().nonDigit())
+//        testRegexEquality("\\w", SuperExpressive().word())
+//        testRegexEquality("\\W", SuperExpressive().nonWord())
+//        testRegexEquality("\\b", SuperExpressive().wordBoundary())
+//        testRegexEquality("\\B", SuperExpressive().nonWordBoundary())
+//        testRegexEquality("\\n", SuperExpressive().newline())
+//        testRegexEquality("\\r", SuperExpressive().carriageReturn())
+//        testRegexEquality("\\t", SuperExpressive().tab())
+//        testRegexEquality("\\0", SuperExpressive().nullByte())
 
-        testRegexEquality("(?:)", SuperExpressive().dotMatchesAll(), setOf(RegexOption.DOT_MATCHES_ALL))
-        testRegexEquality("(?:)", SuperExpressive().caseInsensitive(), setOf(RegexOption.IGNORE_CASE))
-        testRegexEquality("(?:)", SuperExpressive().multiline(), setOf(RegexOption.MULTILINE))
-        testRegexEquality("(?:)", SuperExpressive().unixLines(), setOf(RegexOption.UNIX_LINES))
-
-        testRegexEquality("./", SuperExpressive().anyChar())
-        testRegexEquality("\\s/", SuperExpressive().whitespaceChar())
-        testRegexEquality("\\S/", SuperExpressive().nonWhitespaceChar())
-        testRegexEquality("\\d/", SuperExpressive().digit())
-        testRegexEquality("\\D/", SuperExpressive().nonDigit())
-        testRegexEquality("\\w/", SuperExpressive().word())
-        testRegexEquality("\\W/", SuperExpressive().nonWord())
-        testRegexEquality("\b/", SuperExpressive().wordBoundary())
-        testRegexEquality("\\B/", SuperExpressive().nonWordBoundary())
-        testRegexEquality("\n/", SuperExpressive().newline())
-        testRegexEquality("\r/", SuperExpressive().carriageReturn())
-        testRegexEquality("\t/", SuperExpressive().tab())
-        testRegexEquality("\\0/", SuperExpressive().nullByte())
-
-        testRegexEquality(
-            "/(?:hello|\\d|\\w|[\\.#])/",
-            SuperExpressive {
-                anyOf()
+        testRegexEquality("(?:hello|\\d|\\w|[\\.#])",
+            SuperExpressive()
+                .anyOf()
                     .string("hello")
                     .digit()
                     .word()
                     .char('.')
                     .char('#')
-                    .end()
-            })
+                .end())
 
         //
         //    testRegexEquality(

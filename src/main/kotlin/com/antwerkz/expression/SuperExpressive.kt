@@ -1,5 +1,7 @@
 package com.antwerkz.expression
 
+import java.util.Collections.replaceAll
+import java.util.function.Predicate
 import java.util.regex.Pattern
 
 class SuperExpressive() {
@@ -13,25 +15,51 @@ class SuperExpressive() {
             return superExpressive
         }
 
-        private fun evaluate(el: StackFrame): String {
+        private fun fuseElements(elements: List<Type>): Pair<String, List<Type>> {
+            val (fusables, rest) = partition(elements)
+            val fused = fusables.joinToString("") { el ->
+                if (el.type == "char" || el.type == "anyOfChars") el.value.toString() else
+                    "${el.value/*[0]*/}-${el.value/*[1]*/}"
+            }
+            return fused to rest
+        }
+
+        private fun partition(elements: List<Type>): Pair<List<Type>, List<Type>> {
+            val predicate = Predicate<Type> { type -> type.type in listOf("range", "char", "anyOfChars") }
+
+            val fused = mutableListOf<Type>()
+            val rest = mutableListOf<Type>()
+
+            elements.forEach {
+                if (predicate.test(it)) {
+                    fused += it
+                } else {
+                    rest += it
+                }
+            }
+
+            return fused to rest
+        }
+
+        private fun evaluate(el: Type): String {
             return when (el.type) {
-                Types.noop -> ""
-                Types.anyChar -> "."
-//                Types.whitespaceChar': return '\\s'
-//                Types.nonWhitespaceChar': return '\\S'
-//                Types.digit': return '\\d'
-//                Types.nonDigit': return '\\D'
-//                Types.word': return '\\w'
-//                Types.nonWord': return '\\W'
-//                Types.wordBoundary': return '\\b'
-//                Types.nonWordBoundary': return '\\B'
-//                Types.startOfInput': return '^'
-//                Types.endOfInput': return '$'
-//                Types.newline': return '\\n'
-//                Types.carriageReturn': return '\\r'
-//                Types.tab': return '\\t'
-//                Types.nullByte': return '\\0'
-//                Types.string': return el.value
+                "noop" -> ""
+                "anyChar" -> "."
+                "whitespaceChar" -> "\\s"
+                "nonWhitespaceChar" -> "\\S"
+                "digit" -> "\\d"
+                "nonDigit" -> "\\D"
+                "word" -> "\\w"
+                "nonWord" -> "\\W"
+                "wordBoundary" ->  "\\b"
+                "nonWordBoundary" ->  "\\B"
+                "startOfInput" ->  "^"
+                "endOfInput" ->  "$"
+                "newline" ->  "\\n"
+                "carriageReturn" ->  "\\r"
+                "tab" ->  "\\t"
+//                "nullByte" -> return "\\0"
+                "string" -> el.value as String
 //                Types.char': return el.value
 //                Types.range': return `[${el.value[0]}-${el.value[1]}]`
 //                Types.anythingButRange': return `[^${el.value[0]}-${el.value[1]}]`
@@ -90,17 +118,19 @@ class SuperExpressive() {
 //                return `(?<!${evaluated})`
 //            }
 //
-//                case 'anyOf': {
-//                const [fused, rest] = fuseElements(el.value)
-//
-//                if (!rest.length) {
-//                    return `[${fused}]`
-//                }
-//
-//                const evaluatedRest = rest.map(SuperExpressive[evaluate])
-//                const separator = (evaluatedRest.length > 0 && fused.length > 0) ? '|' : ''
-//                return `(?:${evaluatedRest.join('|')}${separator}${fused ? `[${fused}]` : ''})`
-//            }
+            "anyOf" -> {
+                var (fused, rest) = fuseElements(el.value as List<Type>)
+
+                if (rest.isEmpty()) {
+                    return "[${fused}]"
+                }
+
+                val evaluatedRest = rest.map { evaluate(it) }
+                val separator = if (evaluatedRest.isNotEmpty() && fused.isNotEmpty()) "|" else ""
+                val restJoined = evaluatedRest.joinToString("|")
+                val fusedJoined = if(fused.isNotEmpty()) "[${fused}]" else ""
+                return "(?:$restJoined${separator}${fusedJoined})"
+            }
 //
 //                case 'capture': {
 //                const evaluated = el.value.map(SuperExpressive[evaluate])
@@ -138,12 +168,26 @@ class SuperExpressive() {
         }
     }
 
-    fun anyChar(): SuperExpressive {
-        TODO("Not yet implemented")
+    private fun applyQuantifier(element: Type): Type {
+        val currentFrame = getCurrentFrame()
+        if (currentFrame.quantifier != null) {
+//            var wrapped = currentFrame.quantifier.value(element)
+//            currentFrame.quantifier = null
+//            return wrapped
+        }
+        return element
     }
 
+    private fun matchElement(type: Type): SuperExpressive {
+        return with {
+            getCurrentElementArray().push(applyQuantifier(type))
+        }
+    }
+
+    fun anyChar(): SuperExpressive = matchElement(Types.anyChar())
+
     fun anyOf(): SuperExpressive {
-        TODO("Not yet implemented")
+        return frameCreatingElement(Types.anyOf())
     }
 
     fun assertAhead(): SuperExpressive {
@@ -170,9 +214,7 @@ class SuperExpressive() {
         TODO("Not yet implemented")
     }
 
-    fun carriageReturn(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun carriageReturn() = matchElement(Types.carriageReturn())
 
     fun caseInsensitive(): SuperExpressive {
         return with {
@@ -181,21 +223,21 @@ class SuperExpressive() {
     }
 
     fun char(c: Char): SuperExpressive {
-
-//        const next = this[clone]()
-//        const currentFrame = next[getCurrentFrame]()
-//        currentFrame.elements.push(next[applyQuantifier](t.char(escapeSpecial(c))))
-//
-//        return next
-        TODO("Not yet implemented")
+        return with {
+            val currentFrame = getCurrentFrame()
+            currentFrame.elements.push(applyQuantifier(Types.char(escapeSpecial(c.toString()))))
+        }
     }
 
-    fun digit(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun digit() = matchElement(Types.digit())
 
-    fun end() {
-        TODO("Not yet implemented")
+    fun end(): SuperExpressive {
+        return with {
+            val oldFrame = state.stack.pop();
+            val currentFrame = getCurrentFrame();
+            val value = oldFrame.type.value(oldFrame.elements)
+            currentFrame.elements.push(applyQuantifier(value));
+        }
     }
 
     fun group(): SuperExpressive {
@@ -216,29 +258,17 @@ class SuperExpressive() {
         TODO("Not yet implemented")
     }
 
-    fun newline(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun newline() = matchElement(Types.newline())
 
-    fun nonDigit(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun nonDigit() = matchElement(Types.nonDigit())
 
-    fun nonWhitespaceChar(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun nonWhitespaceChar() = matchElement(Types.nonWhitespaceChar())
 
-    fun nonWord(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun nonWord() = matchElement(Types.nonWord())
 
-    fun nonWordBoundary(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun nonWordBoundary() = matchElement(Types.nonWordBoundary())
 
-    fun nullByte(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+//    fun nullByte() = matchElement(Types.nullByte())
 
     fun optional(): Any {
         TODO("Not yet implemented")
@@ -255,26 +285,21 @@ class SuperExpressive() {
     fun string(s: String): SuperExpressive {
         assert(s.isNotEmpty()) { "s cannot be an empty string" }
 
-//        const next = this[clone]()
-//        const elementValue = s.length > 1 ? t.string(escapeSpecial(s)) : t.char(escapeSpecial(s))
-//        const currentFrame = next[getCurrentFrame]()
-//        currentFrame.elements.push(next[applyQuantifier](elementValue))
-//        return next
-        TODO("Not yet implemented")
+        return with {
+            val elementValue = if(s.length > 1) Types.string(escapeSpecial(s)) else Types.char(escapeSpecial(s))
+            val currentFrame = getCurrentFrame()
+            currentFrame.elements.push(applyQuantifier(elementValue))
+        }
     }
 
-    fun tab(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun tab() = matchElement(Types.tab())
 
     fun toRegex(): Regex {
         val (pattern, flags) = getRegexPatternAndFlags()
         return Regex(pattern, flags.toRegexOptions())
     }
 
-    fun toPattern(): Pattern {
-        return toRegex().toPattern()
-    }
+    fun toPattern(): Pattern = toRegex().toPattern()
 
     fun unixLines(): SuperExpressive {
         return with {
@@ -282,30 +307,42 @@ class SuperExpressive() {
         }
     }
 
-    fun whitespaceChar(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun whitespaceChar() = matchElement(Types.whitespaceChar())
 
-    fun word(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun word() = matchElement(Types.word())
 
-    fun wordBoundary(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    fun wordBoundary() = matchElement(Types.wordBoundary())
 
-    private fun getCurrentElementArray(): List<StackFrame> {
-        return getCurrentFrame().elements
-    }
+    private fun getCurrentElementArray(): MutableList<Type> = getCurrentFrame().elements
 
-    private fun getCurrentFrame(): StackFrame {
-        return state.stack.last()
-    }
+    private fun getCurrentFrame(): StackFrame = state.stack.last()
 
     private fun getRegexPatternAndFlags(): Pair<String, Flags> {
         val pattern: String = getCurrentElementArray()
             .joinToString("") { evaluate(it) }
 
         return pattern.ifBlank { "(?:)" } to this.state.flags
+    }
+
+    private fun frameCreatingElement(type: DeferredType): SuperExpressive {
+        return with {
+            state.stack.add(StackFrame(type));
+        };
+    }
+
+    private fun escapeSpecial(s: String): String {
+        val specialChars = "\\.^$|?*+()[]{}-".toCharArray().map { it.toString() }
+        var escaped = s
+        specialChars.forEach { char ->
+            escaped = escaped.replace(char, "\\${char}")
+        }
+        return escaped
+    }
+
+    private fun <E> MutableList<E>.push(element: E) {
+        add(element)
+    }
+    private fun <E> MutableList<E>.pop(): E {
+        return removeLast()
     }
 }

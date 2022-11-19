@@ -1,7 +1,9 @@
 package com.antwerkz.expression
 
+import java.util.Stack
+
 data class StackFrame(
     val type: Type,
-    val quantifier: String? = null,
-    val elements: MutableList<StackFrame> = mutableListOf()
+    var quantifier: String? = null,
+    val elements: MutableList<Type> = mutableListOf()
 )

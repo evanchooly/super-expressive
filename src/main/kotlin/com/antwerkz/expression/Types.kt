@@ -3,30 +3,32 @@ package com.antwerkz.expression
 @Suppress("unused")
 class Types {
     companion object {
-        val root = Type("root")
-        val noop = Type("noop")
-        val startOfInput = Type("startOfInput")
-        val endOfInput = Type("endOfInput")
-        val anyChar = Type("anyChar")
-        val whitespaceChar = Type("whitespaceChar")
-        val nonWhitespaceChar = Type("nonWhitespaceChar")
-        val digit = Type("digit")
-        val nonDigit = Type("nonDigit")
-        val word = Type("word")
-        val nonWord = Type("nonWord")
-        val wordBoundary = Type("wordBoundary")
-        val nonWordBoundary = Type("nonWordBoundary")
-        val newline = Type("newline")
-        val carriageReturn = Type("carriageReturn")
-        val tab = Type("tab")
-        val nullByte = Type("nullByte")
-        val anyOfChars = Type("anyOfChars")
-        val anythingButString = Type("anythingButString")
-        val anythingButChars = Type("anythingButChars")
-        val anythingButRange = Type("anythingButRange")
-        val char = Type("char")
-        val range = Type("range")
-        val string = Type("string") { quantifierRequiresGroup = true }
+        fun root() = Type("root")
+        fun noop() = Type("noop")
+        fun startOfInput() = Type("startOfInput")
+        fun endOfInput() = Type("endOfInput")
+        fun anyChar() = Type("anyChar")
+        fun whitespaceChar() = Type("whitespaceChar")
+        fun nonWhitespaceChar() = Type("nonWhitespaceChar")
+        fun digit() = Type("digit")
+        fun nonDigit() = Type("nonDigit")
+        fun word() = Type("word")
+        fun nonWord() = Type("nonWord")
+        fun wordBoundary() = Type("wordBoundary")
+        fun nonWordBoundary() = Type("nonWordBoundary")
+        fun newline() = Type("newline")
+        fun carriageReturn() = Type("carriageReturn")
+        fun tab() = Type("tab")
+        fun nullByte() = Type("nullByte")
+        fun anyOfChars() = Type("anyOfChars")
+        fun anythingButString() = Type("anythingButString")
+        fun anythingButChars() = Type("anythingButChars")
+        fun anythingButRange() = Type("anythingButRange")
+        fun char(value: String): Type = Type("char", value)
+        fun range() = Type("range")
+        fun string(value: String) = Type("string", value) { quantifierRequiresGroup = true }
+
+        fun anyOf() = DeferredType("anyOf") { containsChildren = true }
         /*
                 val namedBackreference= name => deferredType("namedBackreference", { name }),
                 val backreference = index => deferredType("backreference", { index }),
@@ -34,7 +36,6 @@ class Types {
                 val subexpression= Type("subexpression", { containsChildren= true, quantifierRequiresGroup= true }),
                 val namedCapture= name => deferredType("namedCapture", { name, containsChildren= true }),
                 val group= deferredType("group", { containsChildren= true }),
-                val anyOf= deferredType("anyOf", { containsChildren= true }),
                 val assertAhead= deferredType("assertAhead", { containsChildren= true }),
                 val assertNotAhead= deferredType("assertNotAhead", { containsChildren= true }),
                 val assertBehind= deferredType("assertBehind", { containsChildren= true }),
@@ -52,14 +53,35 @@ class Types {
     }
 }
 
-class Type(val name: String, options: Type.() -> Unit = {}) {
+open class Type(val type: String, options: Type.() -> Unit = {}) {
     var quantifierRequiresGroup: Boolean = false
+    var value: Any? = null
+
+    constructor(type: String, value: Any, options: Type.() -> Unit = {}): this(type, options) {
+        this.value = value
+    }
 
     init {
         this.options()
     }
 
     override fun toString(): String {
-        return "Type(name='$name', quantifierRequiresGroup=$quantifierRequiresGroup)"
+        return "Type(name='$type', quantifierRequiresGroup=$quantifierRequiresGroup)"
     }
+
+    fun value(elements: MutableList<Type>): Type {
+        return Type(type, elements) { quantifierRequiresGroup = quantifierRequiresGroup}
+    }
+}
+
+class DeferredType(type: String, options: DeferredType.() -> Unit = {}): Type(type) {
+    var containsChildren: Boolean = false
+    init {
+        this.options()
+    }
+
+    override fun toString(): String {
+        return "DeferredType(name='$type', containsChildren=$containsChildren)"
+    }
+
 }
