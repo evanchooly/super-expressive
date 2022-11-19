@@ -7,8 +7,10 @@ data class StackFrame(
 ) {
     fun quantifier(quantifier: Type) {
         if (this.quantifier != null) {
-            throw IllegalStateException("cannot quantify regular expression with 'atLeast' because it's already being quantified with '${quantifier.type}'");
+            throw IllegalStateException(
+                "cannot quantify regular expression with 'atLeast' because it's already being quantified with '${quantifier.type}'"
+            )
         }
-        this.quantifier =quantifier
+        this.quantifier = quantifier
     }
 }

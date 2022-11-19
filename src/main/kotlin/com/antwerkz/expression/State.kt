@@ -9,7 +9,7 @@ class State() {
     var namedGroups = mutableListOf<String>()
     var totalCaptureGroups: Int = 0
 
-    constructor(state: State): this() {
+    constructor(state: State) : this() {
         hasDefinedStart = state.hasDefinedStart
         hasDefinedEnd = state.hasDefinedEnd
         flags = Flags(state.flags)

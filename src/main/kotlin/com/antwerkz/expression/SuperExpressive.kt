@@ -16,19 +16,21 @@ class SuperExpressive() {
 
         private fun fuseElements(elements: List<Type>): Pair<String, List<Type>> {
             val (fusables, rest) = partition(elements)
-            val fused = fusables.joinToString("") { el ->
-                if (el.type == "char" || el.type == "anyOfChars") {
-                    el.value.toString()
-                } else {
-                    val value = el.value as List<*>
-                    "${value[0]}-${value[1]}"
+            val fused =
+                fusables.joinToString("") { el ->
+                    if (el.type == "char" || el.type == "anyOfChars") {
+                        el.value.toString()
+                    } else {
+                        val value = el.value as List<*>
+                        "${value[0]}-${value[1]}"
+                    }
                 }
-            }
             return fused to rest
         }
 
         private fun partition(elements: List<Type>): Pair<List<Type>, List<Type>> {
-            val predicate = Predicate<Type> { type -> type.type in listOf("range", "char", "anyOfChars") }
+            val predicate =
+                Predicate<Type> { type -> type.type in listOf("range", "char", "anyOfChars") }
             val fused = mutableListOf<Type>()
             val rest = mutableListOf<Type>()
 
@@ -60,72 +62,70 @@ class SuperExpressive() {
                 "newline" -> "\\n"
                 "carriageReturn" -> "\\r"
                 "tab" -> "\\t"
-//                "nullByte" -> return "\\0"
+                //                "nullByte" -> return "\\0"
                 "string" -> el.value as String
                 "char" -> el.value as String
                 "range" -> {
                     val list = el.value as List<*>
                     "[${list[0]}-${list[1]}]"
                 }
-//                "anythingButRange" -> "[^${el.value[0]}-${el.value[1]}]"
+                //                "anythingButRange" -> "[^${el.value[0]}-${el.value[1]}]"
                 "anyOfChars" -> "[${el.value}]"
                 "anythingButChars" -> "[^${el.value}]"
                 "namedBackreference" -> "\\k<${(el as DeferredType).name}>"
                 "backreference" -> "\\${(el as DeferredType).index}"
-//                "subexpression" ->  el.value.map(SuperExpressive[evaluate]).join('')
+                //                "subexpression" ->
+                // el.value.map(SuperExpressive[evaluate]).join('')
                 "optional",
                 "zeroOrMore",
                 "zeroOrMoreLazy",
                 "oneOrMore",
-                "oneOrMoreLazy",
-                -> {
+                "oneOrMoreLazy", -> {
                     val inner = evaluate(el.value as Type)
-                    val withGroup = if ((el.value as RealizedType).quantifierRequiresGroup) "(?:${inner})" else inner
+                    val withGroup =
+                        if ((el.value as RealizedType).quantifierRequiresGroup) "(?:${inner})"
+                        else inner
                     val symbol = quantifierTable[el.type]
                     return "${withGroup}${symbol}"
                 }
-
                 "betweenLazy",
                 "between",
                 "atLeast",
-                "exactly"
-                -> {
+                "exactly" -> {
                     val inner = evaluate(el.value as Type)
-                    val withGroup = if ((el.value as RealizedType).quantifierRequiresGroup) "(?:${inner})" else inner
+                    val withGroup =
+                        if ((el.value as RealizedType).quantifierRequiresGroup) "(?:${inner})"
+                        else inner
 
                     val func = times[el.type]!!
                     return "${withGroup}${func((el as DeferredType).times)}"
                 }
-//
-//                case 'anythingButString': {
-//                const chars = el.value.split('').map(c => `[^${c}]`).join('')
-//                return `(?:${chars})`
-//            }
-//
+                //
+                //                case 'anythingButString': {
+                //                const chars = el.value.split('').map(c => `[^${c}]`).join('')
+                //                return `(?:${chars})`
+                //            }
+                //
                 "assertAhead" -> {
                     val list = el.value as List<Type>
                     val evaluated = list.joinToString("") { evaluate(it) }
                     return "(?=${evaluated})"
                 }
-
                 "assertBehind" -> {
                     val list = el.value as List<Type>
                     val evaluated = list.joinToString("") { evaluate(it) }
                     return "(?<=${evaluated})"
                 }
-
                 "assertNotAhead" -> {
                     val list = el.value as List<Type>
                     val evaluated = list.joinToString("") { evaluate(it) }
                     return "(?!${evaluated})"
                 }
-
                 "assertNotBehind" -> {
                     val list = el.value as List<Type>
                     val evaluated = list.joinToString("") { evaluate(it) }
                     return "(?<!${evaluated})"
                 }
-
                 "anyOf" -> {
                     var (fused, rest) = fuseElements(el.value as List<Type>)
 
@@ -133,52 +133,54 @@ class SuperExpressive() {
                         return "[${fused}]"
                     }
                     val evaluatedRest = rest.map { evaluate(it) }
-                    val separator = if (evaluatedRest.isNotEmpty() && fused.isNotEmpty()) "|" else ""
+                    val separator =
+                        if (evaluatedRest.isNotEmpty() && fused.isNotEmpty()) "|" else ""
                     val restJoined = evaluatedRest.joinToString("|")
                     val fusedJoined = if (fused.isNotEmpty()) "[${fused}]" else ""
                     return "(?:$restJoined${separator}${fusedJoined})"
                 }
-
                 "capture" -> {
                     val list = el.value as List<Type>
                     val evaluated = list.joinToString("") { evaluate(it) }
                     return "(${evaluated})"
                 }
-
                 "namedCapture" -> {
                     el as DeferredType
                     val list = el.value as List<Type>
                     val evaluated = list.joinToString("") { evaluate(it) }
                     return "(?<${el.name}>${evaluated})"
                 }
-
                 "group" -> {
                     val value = el.value as List<Type>
                     val evaluated = value.joinToString("") { evaluate(it) }
                     return "(?:${evaluated})"
                 }
-
-                else -> throw IllegalArgumentException("Can't process unsupported element type: ${el.type}")
+                else ->
+                    throw IllegalArgumentException(
+                        "Can't process unsupported element type: ${el.type}"
+                    )
             }
         }
 
-        private val quantifierTable = mapOf(
-            "oneOrMore" to "+",
-            "oneOrMoreLazy" to "+?",
-            "zeroOrMore" to "*",
-            "zeroOrMoreLazy" to "*?",
-            "optional" to "?",
-        )
+        private val quantifierTable =
+            mapOf(
+                "oneOrMore" to "+",
+                "oneOrMoreLazy" to "+?",
+                "zeroOrMore" to "*",
+                "zeroOrMoreLazy" to "*?",
+                "optional" to "?",
+            )
 
-        private val times = mapOf<String, (List<Int>) -> String>(
-            "exactly" to { times: List<Int> -> "{${times}}" },
-            "atLeast" to { times: List<Int> -> "{${times},}" },
-            "between" to { times: List<Int> -> "{${times[0]},${times[1]}}" },
-            "betweenLazy" to { times: List<Int> -> "{${times[0]},${times[1]}}?" },
-        )
+        private val times =
+            mapOf<String, (List<Int>) -> String>(
+                "exactly" to { times: List<Int> -> "{${times}}" },
+                "atLeast" to { times: List<Int> -> "{${times},}" },
+                "between" to { times: List<Int> -> "{${times[0]},${times[1]}}" },
+                "betweenLazy" to { times: List<Int> -> "{${times[0]},${times[1]}}?" },
+            )
     }
 
-    private constructor(expressive: SuperExpressive): this() {
+    private constructor(expressive: SuperExpressive) : this() {
         state = State(expressive.state)
     }
 
@@ -188,11 +190,7 @@ class SuperExpressive() {
         return next
     }
 
-    fun dotMatchesAll(): SuperExpressive {
-        return with {
-            state.flags.d = true
-        }
-    }
+    fun dotMatchesAll() = with { state.flags.d = true }
 
     private fun applyQuantifier(element: Type): Type {
         val currentFrame = getCurrentFrame()
@@ -205,37 +203,23 @@ class SuperExpressive() {
         return element
     }
 
-    private fun matchElement(type: Type): SuperExpressive {
-        return with {
-            getCurrentElementArray().push(applyQuantifier(type))
-        }
+    private fun matchElement(type: Type) = with {
+        getCurrentElementArray().push(applyQuantifier(type))
     }
 
-    fun anyChar(): SuperExpressive = matchElement(Types.anyChar())
+    fun anyChar() = matchElement(Types.anyChar())
 
-    fun anyOf(): SuperExpressive {
-        return frameCreatingElement(Types.anyOf())
-    }
+    fun anyOf() = frameCreatingElement(Types.anyOf())
 
-    fun assertAhead(): SuperExpressive {
-        return frameCreatingElement(Types.assertAhead());
-    }
+    fun assertAhead() = frameCreatingElement(Types.assertAhead())
 
-    fun assertBehind(): SuperExpressive {
-        return frameCreatingElement(Types.assertBehind());
-    }
+    fun assertBehind() = frameCreatingElement(Types.assertBehind())
 
-    fun assertNotAhead(): SuperExpressive {
-        return frameCreatingElement(Types.assertNotAhead());
-    }
+    fun assertNotAhead() = frameCreatingElement(Types.assertNotAhead())
 
-    fun assertNotBehind(): SuperExpressive {
-        return frameCreatingElement(Types.assertNotBehind());
-    }
+    fun assertNotBehind() = frameCreatingElement(Types.assertNotBehind())
 
-    fun backreference(index: Int): SuperExpressive {
-        return matchElement(Types.backreference(index));
-    }
+    fun backreference(index: Int) = matchElement(Types.backreference(index))
 
     fun capture(): SuperExpressive {
         return with {
@@ -247,11 +231,7 @@ class SuperExpressive() {
 
     fun carriageReturn() = matchElement(Types.carriageReturn())
 
-    fun caseInsensitive(): SuperExpressive {
-        return with {
-            state.flags.i = true
-        }
-    }
+    fun caseInsensitive() = with { state.flags.i = true }
 
     fun char(c: Char): SuperExpressive {
         return with {
@@ -274,20 +254,16 @@ class SuperExpressive() {
         }
     }
 
-    fun group(): SuperExpressive {
-        return frameCreatingElement(Types.group());
-    }
+    fun group() = frameCreatingElement(Types.group())
 
-    fun multiline(): SuperExpressive {
-        return with {
-            state.flags.m = true
-        }
-    }
+    fun multiline() = with { state.flags.m = true }
 
     fun namedBackreference(name: String): SuperExpressive {
-        if(!this.state.namedGroups.contains(name)) {
-            throw IllegalArgumentException("no capture group called '${name}' exists (create one with .namedCapture())")
-        };
+        if (!this.state.namedGroups.contains(name)) {
+            throw IllegalArgumentException(
+                "no capture group called '${name}' exists (create one with .namedCapture())"
+            )
+        }
         return matchElement(Types.namedBackreference(name))
     }
 
@@ -313,27 +289,21 @@ class SuperExpressive() {
 
     fun nonWordBoundary() = matchElement(Types.nonWordBoundary())
 
-//    fun nullByte() = matchElement(Types.nullByte())
+    //    fun nullByte() = matchElement(Types.nullByte())
 
-    fun oneOrMore(): SuperExpressive {
-        return quantifierElement(Types.oneOrMore());
-    }
-    fun oneOrMoreLazy(): SuperExpressive {
-        return quantifierElement(Types.oneOrMoreLazy());
-    }
+    fun oneOrMore() = quantifierElement(Types.oneOrMore())
+    fun oneOrMoreLazy() = quantifierElement(Types.oneOrMoreLazy())
 
-    fun optional(): SuperExpressive {
-        return quantifierElement(Types.optional());
-    }
+    fun optional() = quantifierElement(Types.optional())
 
     fun range(start: Char, end: Char): SuperExpressive {
         if (start >= end) {
-            throw java.lang.IllegalArgumentException("start ($start) must be smaller than end (${end})")
+            throw java.lang.IllegalArgumentException(
+                "start ($start) must be smaller than end (${end})"
+            )
         }
 
-        return with {
-            getCurrentFrame().elements.push(applyQuantifier(Types.range(start, end)))
-        }
+        return with { getCurrentFrame().elements.push(applyQuantifier(Types.range(start, end))) }
     }
 
     fun singleLine(): SuperExpressive {
@@ -342,25 +312,24 @@ class SuperExpressive() {
 
     fun startOfInput(): SuperExpressive {
         return with {
-            state.hasDefinedStart = true;
-            getCurrentElementArray().push(Types.startOfInput());
-            
-        }    
+            state.hasDefinedStart = true
+            getCurrentElementArray().push(Types.startOfInput())
+        }
     }
 
     fun endOfInput(): SuperExpressive {
         return with {
-            state.hasDefinedEnd = true;
-            getCurrentElementArray().push(Types.endOfInput());
-            
-        }    
+            state.hasDefinedEnd = true
+            getCurrentElementArray().push(Types.endOfInput())
+        }
     }
 
     fun string(s: String): SuperExpressive {
         assert(s.isNotEmpty()) { "s cannot be an empty string" }
 
         return with {
-            val elementValue = if(s.length > 1) Types.string(escapeSpecial(s)) else Types.char(escapeSpecial(s))
+            val elementValue =
+                if (s.length > 1) Types.string(escapeSpecial(s)) else Types.char(escapeSpecial(s))
             val currentFrame = getCurrentFrame()
             currentFrame.elements.push(applyQuantifier(elementValue))
         }
@@ -375,11 +344,7 @@ class SuperExpressive() {
 
     fun toPattern(): Pattern = toRegex().toPattern()
 
-    fun unixLines(): SuperExpressive {
-        return with {
-            state.flags.u = true
-        }
-    }
+    fun unixLines() = with { state.flags.u = true }
 
     fun whitespaceChar() = matchElement(Types.whitespaceChar())
 
@@ -392,74 +357,47 @@ class SuperExpressive() {
     private fun getCurrentFrame(): StackFrame = state.stack.last()
 
     private fun getRegexPatternAndFlags(): Pair<String, Flags> {
-        val pattern: String = getCurrentElementArray()
-            .joinToString("") { evaluate(it) }
+        val pattern: String = getCurrentElementArray().joinToString("") { evaluate(it) }
 
         return pattern.ifBlank { "(?:)" } to this.state.flags
     }
 
-    private fun frameCreatingElement(type: DeferredType): SuperExpressive {
-        return with {
-            state.stack.add(StackFrame(type))
-        }
+    private fun frameCreatingElement(type: DeferredType) = with {
+        state.stack.add(StackFrame(type))
     }
 
     private fun escapeSpecial(s: String): String {
         val specialChars = "\\.^$|?*+()[]{}-".toCharArray().map { it.toString() }
         var escaped = s
-        specialChars.forEach { char ->
-            escaped = escaped.replace(char, "\\${char}")
-        }
+        specialChars.forEach { char -> escaped = escaped.replace(char, "\\${char}") }
         return escaped
     }
     private fun <E> MutableList<E>.push(element: E) {
         add(element)
     }
 
-    private fun <E> MutableList<E>.pop(): E {
-        return removeLast()
-    }
+    private fun <E> MutableList<E>.pop(): E = removeLast()
 
-    fun zeroOrMore(): SuperExpressive {
-        return quantifierElement(Types.zeroOrMore());
-    }
-    fun zeroOrMoreLazy(): SuperExpressive {
-        return quantifierElement(Types.zeroOrMoreLazy());
-    }
-    private fun quantifierElement(type: Type): SuperExpressive {
-        return with {
-            getCurrentFrame().quantifier(type)
-        }
-    }
+    fun zeroOrMore() = quantifierElement(Types.zeroOrMore())
+    fun zeroOrMoreLazy() = quantifierElement(Types.zeroOrMoreLazy())
+    private fun quantifierElement(type: Type) = with { getCurrentFrame().quantifier(type) }
 
-    fun exactly(count: Int): SuperExpressive {
-        return with {
-            getCurrentFrame().quantifier(Types.exactly(count))
-        }
-    }
-    fun atLeast(count: Int): SuperExpressive {
-        return with {
-            getCurrentFrame().quantifier(Types.atLeast(count))
-        }
-    }
+    fun exactly(count: Int) = with { getCurrentFrame().quantifier(Types.exactly(count)) }
+    fun atLeast(count: Int) = with { getCurrentFrame().quantifier(Types.atLeast(count)) }
 
     fun between(x: Int, y: Int): SuperExpressive {
-        if(x >= y) {
+        if (x >= y) {
             throw IllegalArgumentException("x ($x) must be less than y ($y)")
         }
 
-        return with {
-            getCurrentFrame().quantifier(Types.between(x, y))
-        };
+        return with { getCurrentFrame().quantifier(Types.between(x, y)) }
     }
     fun betweenLazy(x: Int, y: Int): SuperExpressive {
-        if(x >= y) {
+        if (x >= y) {
             throw IllegalArgumentException("x ($x) must be less than y ($y)")
         }
 
-        return with {
-            getCurrentFrame().quantifier(Types.betweenLazy(x, y))
-        };
+        return with { getCurrentFrame().quantifier(Types.betweenLazy(x, y)) }
     }
 
     fun anyOfChars(chars: String): SuperExpressive {
@@ -468,7 +406,6 @@ class SuperExpressive() {
             val currentFrame = getCurrentFrame()
 
             currentFrame.elements.push(applyQuantifier(elementValue))
-
         }
     }
     fun anythingButChars(chars: String): SuperExpressive {
@@ -477,18 +414,18 @@ class SuperExpressive() {
             val currentFrame = getCurrentFrame()
 
             currentFrame.elements.push(applyQuantifier(elementValue))
-
         }
     }
 
     fun anythingButRange(start: Char, end: Char): SuperExpressive {
         if (start >= end) {
-            throw java.lang.IllegalArgumentException("start ($start) must be smaller than end (${end})")
+            throw java.lang.IllegalArgumentException(
+                "start ($start) must be smaller than end (${end})"
+            )
         }
 
         return with {
             getCurrentFrame().elements.push(applyQuantifier(Types.anythingButRange(start, end)))
         }
-
     }
 }

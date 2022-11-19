@@ -18,10 +18,7 @@ data class Flags(
     }
 
     override fun toString(): String {
-        return d.isTrue("d") +
-            i.isTrue("i") +
-            m.isTrue("m") +
-            u.isTrue("u")
+        return d.isTrue("d") + i.isTrue("i") + m.isTrue("m") + u.isTrue("u")
     }
 
     fun toRegexOptions(): Set<RegexOption> {

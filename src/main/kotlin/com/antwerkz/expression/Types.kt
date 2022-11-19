@@ -25,22 +25,25 @@ class Types {
         fun anyOfChars(chars: String) = RealizedType("anyOfChars", chars)
         fun anythingButString() = RealizedType("anythingButString")
         fun anythingButChars(chars: String) = RealizedType("anythingButChars", chars)
-        fun anythingButRange(start: Char, end: Char) = RealizedType("anythingButRange", listOf(start, end))
+        fun anythingButRange(start: Char, end: Char) =
+            RealizedType("anythingButRange", listOf(start, end))
         fun char(value: String): RealizedType = RealizedType("char", value)
         fun range(start: Char, end: Char) = RealizedType("range", listOf(start, end))
         fun string(value: String) = RealizedType("string", value) { quantifierRequiresGroup = true }
 
         fun anyOf() = DeferredType("anyOf") { containsChildren = true }
-        fun namedBackreference(backReference: String) = DeferredType("namedBackreference") { name = backReference }
+        fun namedBackreference(backReference: String) =
+            DeferredType("namedBackreference") { name = backReference }
 
         fun backreference(refIndex: Int) = DeferredType("backreference") { index = refIndex }
 
         fun capture() = DeferredType("capture") { containsChildren = true }
 
-        fun namedCapture(captureName: String) = DeferredType("namedCapture") {
-            name = captureName
-            containsChildren = true
-        }
+        fun namedCapture(captureName: String) =
+            DeferredType("namedCapture") {
+                name = captureName
+                containsChildren = true
+            }
         fun group() = DeferredType("group") { containsChildren = true }
 
         fun assertAhead() = DeferredType("assertAhead") { containsChildren = true }
@@ -48,31 +51,36 @@ class Types {
         fun assertBehind() = DeferredType("assertBehind") { containsChildren = true }
         fun assertNotBehind() = DeferredType("assertNotBehind") { containsChildren = true }
 
-        fun subexpression() = RealizedType("subexpression") {
-            containsChildren = true
-            quantifierRequiresGroup = true
-        }
-        fun exactly(count: Int) = DeferredType("exactly") {
-            times = listOf(count)
-            containsChildren = true
-        }
+        fun subexpression() =
+            RealizedType("subexpression") {
+                containsChildren = true
+                quantifierRequiresGroup = true
+            }
+        fun exactly(count: Int) =
+            DeferredType("exactly") {
+                times = listOf(count)
+                containsChildren = true
+            }
 
-        fun atLeast(count: Int) = DeferredType("atLeast") {
-            times = listOf(count)
-            containsChildren = true
-        }
-                       fun between(x: Int, y: Int) = DeferredType("between") {
-                           times = listOf(x, y)
-                           containsChildren = true
-                       }
-                       fun betweenLazy(x: Int, y: Int) = DeferredType("betweenLazy") {
-                           times = listOf(x, y)
-                           containsChildren = true
-                       }
-                       fun zeroOrMore() = DeferredType("zeroOrMore") { containsChildren = true }
-                       fun zeroOrMoreLazy() = DeferredType("zeroOrMoreLazy") { containsChildren = true }
-                       fun oneOrMore() = DeferredType("oneOrMore") { containsChildren = true }
-                       fun oneOrMoreLazy() = DeferredType("oneOrMoreLazy") { containsChildren = true }
+        fun atLeast(count: Int) =
+            DeferredType("atLeast") {
+                times = listOf(count)
+                containsChildren = true
+            }
+        fun between(x: Int, y: Int) =
+            DeferredType("between") {
+                times = listOf(x, y)
+                containsChildren = true
+            }
+        fun betweenLazy(x: Int, y: Int) =
+            DeferredType("betweenLazy") {
+                times = listOf(x, y)
+                containsChildren = true
+            }
+        fun zeroOrMore() = DeferredType("zeroOrMore") { containsChildren = true }
+        fun zeroOrMoreLazy() = DeferredType("zeroOrMoreLazy") { containsChildren = true }
+        fun oneOrMore() = DeferredType("oneOrMore") { containsChildren = true }
+        fun oneOrMoreLazy() = DeferredType("oneOrMoreLazy") { containsChildren = true }
         fun optional() = DeferredType("optional") { containsChildren = true }
     }
 }
@@ -83,12 +91,16 @@ interface Type {
     fun value(elements: MutableList<Type>): Type
 }
 
-open class RealizedType(override val type: String, options: RealizedType.() -> Unit = {}): Type {
+open class RealizedType(override val type: String, options: RealizedType.() -> Unit = {}) : Type {
     var containsChildren: Boolean = false
     var quantifierRequiresGroup: Boolean = false
     override var value: Any? = null
 
-    constructor(type: String, value: Any, options: RealizedType.() -> Unit = {}): this(type, options) {
+    constructor(
+        type: String,
+        value: Any,
+        options: RealizedType.() -> Unit = {}
+    ) : this(type, options) {
         this.value = value
     }
 
@@ -106,18 +118,22 @@ open class RealizedType(override val type: String, options: RealizedType.() -> U
     }
 }
 
-class DeferredType(override val type: String, options: DeferredType.() -> Unit = {}): Type {
+class DeferredType(override val type: String, options: DeferredType.() -> Unit = {}) : Type {
     var times: List<Int> = emptyList()
     var name: String? = null
     var index: Int = 0
 
     override var value: Any? = null
     var containsChildren: Boolean = false
-    constructor(type: String, value: Any?, options: DeferredType.() -> Unit = {}): this(type, options) {
+    constructor(
+        type: String,
+        value: Any?,
+        options: DeferredType.() -> Unit = {}
+    ) : this(type, options) {
         this.value = value
     }
 
-    constructor(original: DeferredType): this(original.type, original.value) {
+    constructor(original: DeferredType) : this(original.type, original.value) {
         this.name = original.name
         this.index = original.index
         this.times = original.times
@@ -129,13 +145,10 @@ class DeferredType(override val type: String, options: DeferredType.() -> Unit =
     }
 
     override fun value(elements: MutableList<Type>): Type {
-        return DeferredType(this).also {
-            it.value = elements
-        }
+        return DeferredType(this).also { it.value = elements }
     }
 
     override fun toString(): String {
         return "DeferredType(name='$type', containsChildren=$containsChildren)"
     }
-
 }
