@@ -1,0 +1,19 @@
+name: Pull Requests
+
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+
+jobs:
+  Quality:
+    name: Style Checks
+    uses: evanchooly/workflows/.github/workflows/build.yml@master
+    with:
+      maven-flags: "-Dcode-audits"
+
+  Build:
+    needs:
+      - Quality
+    uses: evanchooly/workflows/.github/workflows/pull-request.yml@master
+

@@ -1,0 +1,14 @@
+name: Build Project
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  Build:
+    strategy:
+      matrix:
+        java: [ 11, 19 ]
+    uses: evanchooly/workflows/.github/workflows/build.yml@master
+    with:
+      java: ${{ matrix.java }}
