@@ -69,7 +69,10 @@ class SuperExpressive() {
                     val list = el.value as List<*>
                     "[${list[0]}-${list[1]}]"
                 }
-                //                "anythingButRange" -> "[^${el.value[0]}-${el.value[1]}]"
+                "anythingButRange" -> {
+                    val list = el.value as List<*>
+                    "[^${list[0]}-${list[1]}]"
+                }
                 "anyOfChars" -> "[${el.value}]"
                 "anythingButChars" -> "[^${el.value}]"
                 "namedBackreference" -> "\\k<${(el as DeferredType).name}>"
@@ -91,21 +94,20 @@ class SuperExpressive() {
                 "betweenLazy",
                 "between",
                 "atLeast",
-                "exactly" -> {
+                "exactly",
+                -> {
                     val inner = evaluate(el.value as Type)
                     val withGroup =
                         if ((el.value as RealizedType).quantifierRequiresGroup) "(?:${inner})"
                         else inner
-
                     val func = times[el.type]!!
                     return "${withGroup}${func((el as DeferredType).times)}"
                 }
-                //
-                //                case 'anythingButString': {
-                //                const chars = el.value.split('').map(c => `[^${c}]`).join('')
-                //                return `(?:${chars})`
-                //            }
-                //
+                "anythingButString" -> {
+                    val chars = "" //el.value.split("").map(c => `[^${c}]`).join('')
+                    return "(?:${chars})"
+                }
+
                 "assertAhead" -> {
                     val list = el.value as List<Type>
                     val evaluated = list.joinToString("") { evaluate(it) }
@@ -172,9 +174,9 @@ class SuperExpressive() {
             )
 
         private val times =
-            mapOf<String, (List<Int>) -> String>(
-                "exactly" to { times: List<Int> -> "{${times}}" },
-                "atLeast" to { times: List<Int> -> "{${times},}" },
+            mapOf(
+                "exactly" to { times: List<Int> -> "{${times[0]}}" },
+                "atLeast" to { times: List<Int> -> "{${times[0]},}" },
                 "between" to { times: List<Int> -> "{${times[0]},${times[1]}}" },
                 "betweenLazy" to { times: List<Int> -> "{${times[0]},${times[1]}}?" },
             )
@@ -198,7 +200,7 @@ class SuperExpressive() {
         if (quantifier != null) {
             quantifier.value = element
             currentFrame.quantifier = null
-            return element
+            return quantifier
         }
         return element
     }
@@ -325,7 +327,9 @@ class SuperExpressive() {
     }
 
     fun string(s: String): SuperExpressive {
-        assert(s.isNotEmpty()) { "s cannot be an empty string" }
+        if(s.isEmpty()) {
+            throw IllegalArgumentException("s cannot be an empty string")
+        }
 
         return with {
             val elementValue =

@@ -15,8 +15,6 @@ class SuperExpressiveTest {
 
     @Test
     fun tests() {
-        testRegexEquality("\\w?", SuperExpressive().optional().word())
-
         testRegexEquality("(?:)", SuperExpressive())
 
         testRegexEquality(
