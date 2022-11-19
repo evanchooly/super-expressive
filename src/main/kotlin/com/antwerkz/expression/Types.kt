@@ -1,63 +1,94 @@
 package com.antwerkz.expression
 
+import kotlin.text.Typography.times
+
 @Suppress("unused")
 class Types {
     companion object {
-        fun root() = Type("root")
-        fun noop() = Type("noop")
-        fun startOfInput() = Type("startOfInput")
-        fun endOfInput() = Type("endOfInput")
-        fun anyChar() = Type("anyChar")
-        fun whitespaceChar() = Type("whitespaceChar")
-        fun nonWhitespaceChar() = Type("nonWhitespaceChar")
-        fun digit() = Type("digit")
-        fun nonDigit() = Type("nonDigit")
-        fun word() = Type("word")
-        fun nonWord() = Type("nonWord")
-        fun wordBoundary() = Type("wordBoundary")
-        fun nonWordBoundary() = Type("nonWordBoundary")
-        fun newline() = Type("newline")
-        fun carriageReturn() = Type("carriageReturn")
-        fun tab() = Type("tab")
-        fun nullByte() = Type("nullByte")
-        fun anyOfChars() = Type("anyOfChars")
-        fun anythingButString() = Type("anythingButString")
-        fun anythingButChars() = Type("anythingButChars")
-        fun anythingButRange() = Type("anythingButRange")
-        fun char(value: String): Type = Type("char", value)
-        fun range() = Type("range")
-        fun string(value: String) = Type("string", value) { quantifierRequiresGroup = true }
+        fun root() = RealizedType("root")
+        fun noop() = RealizedType("noop")
+        fun startOfInput() = RealizedType("startOfInput")
+        fun endOfInput() = RealizedType("endOfInput")
+        fun anyChar() = RealizedType("anyChar")
+        fun whitespaceChar() = RealizedType("whitespaceChar")
+        fun nonWhitespaceChar() = RealizedType("nonWhitespaceChar")
+        fun digit() = RealizedType("digit")
+        fun nonDigit() = RealizedType("nonDigit")
+        fun word() = RealizedType("word")
+        fun nonWord() = RealizedType("nonWord")
+        fun wordBoundary() = RealizedType("wordBoundary")
+        fun nonWordBoundary() = RealizedType("nonWordBoundary")
+        fun newline() = RealizedType("newline")
+        fun carriageReturn() = RealizedType("carriageReturn")
+        fun tab() = RealizedType("tab")
+        fun nullByte() = RealizedType("nullByte")
+        fun anyOfChars(chars: String) = RealizedType("anyOfChars", chars)
+        fun anythingButString() = RealizedType("anythingButString")
+        fun anythingButChars(chars: String) = RealizedType("anythingButChars", chars)
+        fun anythingButRange(start: Char, end: Char) = RealizedType("anythingButRange", listOf(start, end))
+        fun char(value: String): RealizedType = RealizedType("char", value)
+        fun range(start: Char, end: Char) = RealizedType("range", listOf(start, end))
+        fun string(value: String) = RealizedType("string", value) { quantifierRequiresGroup = true }
 
         fun anyOf() = DeferredType("anyOf") { containsChildren = true }
-        /*
-                val namedBackreference= name => deferredType("namedBackreference", { name }),
-                val backreference = index => deferredType("backreference", { index }),
-                val capture= deferredType("capture", { containsChildren= true }),
-                val subexpression= Type("subexpression", { containsChildren= true, quantifierRequiresGroup= true }),
-                val namedCapture= name => deferredType("namedCapture", { name, containsChildren= true }),
-                val group= deferredType("group", { containsChildren= true }),
-                val assertAhead= deferredType("assertAhead", { containsChildren= true }),
-                val assertNotAhead= deferredType("assertNotAhead", { containsChildren= true }),
-                val assertBehind= deferredType("assertBehind", { containsChildren= true }),
-                val assertNotBehind= deferredType("assertNotBehind", { containsChildren= true }),
-                val exactly= times => deferredType("exactly", { times, containsChild= true }),
-                val atLeast= times => deferredType("atLeast", { times, containsChild= true }),
-                val between= (x, y) => deferredType("between", { times= [x, y], containsChild= true }),
-                val betweenLazy= (x, y) => deferredType("betweenLazy", { times= [x, y], containsChild= true }),
-                val zeroOrMore= deferredType("zeroOrMore", { containsChild= true }),
-                val zeroOrMoreLazy= deferredType("zeroOrMoreLazy", { containsChild= true }),
-                val oneOrMore= deferredType("oneOrMore", { containsChild= true }),
-                val oneOrMoreLazy= deferredType("oneOrMoreLazy", { containsChild= true }),
-                val optional= deferredType("optional", { containsChild= true }),
-        */
+        fun namedBackreference(backReference: String) = DeferredType("namedBackreference") { name = backReference }
+
+        fun backreference(refIndex: Int) = DeferredType("backreference") { index = refIndex }
+
+        fun capture() = DeferredType("capture") { containsChildren = true }
+
+        fun namedCapture(captureName: String) = DeferredType("namedCapture") {
+            name = captureName
+            containsChildren = true
+        }
+        fun group() = DeferredType("group") { containsChildren = true }
+
+        fun assertAhead() = DeferredType("assertAhead") { containsChildren = true }
+        fun assertNotAhead() = DeferredType("assertNotAhead") { containsChildren = true }
+        fun assertBehind() = DeferredType("assertBehind") { containsChildren = true }
+        fun assertNotBehind() = DeferredType("assertNotBehind") { containsChildren = true }
+
+        fun subexpression() = RealizedType("subexpression") {
+            containsChildren = true
+            quantifierRequiresGroup = true
+        }
+        fun exactly(count: Int) = DeferredType("exactly") {
+            times = listOf(count)
+            containsChildren = true
+        }
+
+        fun atLeast(count: Int) = DeferredType("atLeast") {
+            times = listOf(count)
+            containsChildren = true
+        }
+                       fun between(x: Int, y: Int) = DeferredType("between") {
+                           times = listOf(x, y)
+                           containsChildren = true
+                       }
+                       fun betweenLazy(x: Int, y: Int) = DeferredType("betweenLazy") {
+                           times = listOf(x, y)
+                           containsChildren = true
+                       }
+                       fun zeroOrMore() = DeferredType("zeroOrMore") { containsChildren = true }
+                       fun zeroOrMoreLazy() = DeferredType("zeroOrMoreLazy") { containsChildren = true }
+                       fun oneOrMore() = DeferredType("oneOrMore") { containsChildren = true }
+                       fun oneOrMoreLazy() = DeferredType("oneOrMoreLazy") { containsChildren = true }
+        fun optional() = DeferredType("optional") { containsChildren = true }
     }
 }
 
-open class Type(val type: String, options: Type.() -> Unit = {}) {
-    var quantifierRequiresGroup: Boolean = false
-    var value: Any? = null
+interface Type {
+    val type: String
+    var value: Any?
+    fun value(elements: MutableList<Type>): Type
+}
 
-    constructor(type: String, value: Any, options: Type.() -> Unit = {}): this(type, options) {
+open class RealizedType(override val type: String, options: RealizedType.() -> Unit = {}): Type {
+    var containsChildren: Boolean = false
+    var quantifierRequiresGroup: Boolean = false
+    override var value: Any? = null
+
+    constructor(type: String, value: Any, options: RealizedType.() -> Unit = {}): this(type, options) {
         this.value = value
     }
 
@@ -69,15 +100,38 @@ open class Type(val type: String, options: Type.() -> Unit = {}) {
         return "Type(name='$type', quantifierRequiresGroup=$quantifierRequiresGroup)"
     }
 
-    fun value(elements: MutableList<Type>): Type {
-        return Type(type, elements) { quantifierRequiresGroup = quantifierRequiresGroup}
+    override fun value(elements: MutableList<Type>): RealizedType {
+        val requiresGroup = quantifierRequiresGroup
+        return RealizedType(type, elements) { quantifierRequiresGroup = requiresGroup }
     }
 }
 
-class DeferredType(type: String, options: DeferredType.() -> Unit = {}): Type(type) {
+class DeferredType(override val type: String, options: DeferredType.() -> Unit = {}): Type {
+    var times: List<Int> = emptyList()
+    var name: String? = null
+    var index: Int = 0
+
+    override var value: Any? = null
     var containsChildren: Boolean = false
+    constructor(type: String, value: Any?, options: DeferredType.() -> Unit = {}): this(type, options) {
+        this.value = value
+    }
+
+    constructor(original: DeferredType): this(original.type, original.value) {
+        this.name = original.name
+        this.index = original.index
+        this.times = original.times
+        this.containsChildren = original.containsChildren
+    }
+
     init {
         this.options()
+    }
+
+    override fun value(elements: MutableList<Type>): Type {
+        return DeferredType(this).also {
+            it.value = elements
+        }
     }
 
     override fun toString(): String {

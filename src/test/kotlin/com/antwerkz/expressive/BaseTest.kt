@@ -1,35 +1,43 @@
 import com.antwerkz.expression.SuperExpressive
 import org.testng.Assert.assertEquals
+import org.testng.Assert.fail
 import org.testng.annotations.Test
 
 class SuperExpressiveTest {
-    fun testErrorCondition(description: String, errorMsg: String, superExpressionFn: () -> Unit) {
-        TODO()
-        //  assertThrows(superExpressionFn, errorMsg)
+    private fun testErrorCondition(errorMsg: String, function: () -> SuperExpressive) {
+        try {
+            val regex = function().toRegex()
+            fail("$errorMsg -- regex = $regex")
+        } catch (ae: AssertionError) {
+            throw ae
+        } catch (_: Throwable) {
+        }
     }
 
     @Test
     fun tests() {
-//        testRegexEquality("(?:)", SuperExpressive())
-//
-//        testRegexEquality("(?:)", SuperExpressive().dotMatchesAll(), setOf(RegexOption.DOT_MATCHES_ALL))
-//        testRegexEquality("(?:)", SuperExpressive().caseInsensitive(), setOf(RegexOption.IGNORE_CASE))
-//        testRegexEquality("(?:)", SuperExpressive().multiline(), setOf(RegexOption.MULTILINE))
-//        testRegexEquality("(?:)", SuperExpressive().unixLines(), setOf(RegexOption.UNIX_LINES))
-//
-//        testRegexEquality(".", SuperExpressive().anyChar())
-//        testRegexEquality("\\s", SuperExpressive().whitespaceChar())
-//        testRegexEquality("\\S", SuperExpressive().nonWhitespaceChar())
-//        testRegexEquality("\\d", SuperExpressive().digit())
-//        testRegexEquality("\\D", SuperExpressive().nonDigit())
-//        testRegexEquality("\\w", SuperExpressive().word())
-//        testRegexEquality("\\W", SuperExpressive().nonWord())
-//        testRegexEquality("\\b", SuperExpressive().wordBoundary())
-//        testRegexEquality("\\B", SuperExpressive().nonWordBoundary())
-//        testRegexEquality("\\n", SuperExpressive().newline())
-//        testRegexEquality("\\r", SuperExpressive().carriageReturn())
-//        testRegexEquality("\\t", SuperExpressive().tab())
-//        testRegexEquality("\\0", SuperExpressive().nullByte())
+        testRegexEquality("\\w?", SuperExpressive().optional().word())
+
+
+        testRegexEquality("(?:)", SuperExpressive())
+
+        testRegexEquality("(?:)", SuperExpressive().dotMatchesAll(), setOf(RegexOption.DOT_MATCHES_ALL))
+        testRegexEquality("(?:)", SuperExpressive().caseInsensitive(), setOf(RegexOption.IGNORE_CASE))
+        testRegexEquality("(?:)", SuperExpressive().multiline(), setOf(RegexOption.MULTILINE))
+        testRegexEquality("(?:)", SuperExpressive().unixLines(), setOf(RegexOption.UNIX_LINES))
+
+        testRegexEquality(".", SuperExpressive().anyChar())
+        testRegexEquality("\\s", SuperExpressive().whitespaceChar())
+        testRegexEquality("\\S", SuperExpressive().nonWhitespaceChar())
+        testRegexEquality("\\d", SuperExpressive().digit())
+        testRegexEquality("\\D", SuperExpressive().nonDigit())
+        testRegexEquality("\\w", SuperExpressive().word())
+        testRegexEquality("\\W", SuperExpressive().nonWord())
+        testRegexEquality("\\b", SuperExpressive().wordBoundary())
+        testRegexEquality("\\B", SuperExpressive().nonWordBoundary())
+        testRegexEquality("\\n", SuperExpressive().newline())
+        testRegexEquality("\\r", SuperExpressive().carriageReturn())
+        testRegexEquality("\\t", SuperExpressive().tab())
 
         testRegexEquality("(?:hello|\\d|\\w|[\\.#])",
             SuperExpressive()
@@ -41,199 +49,168 @@ class SuperExpressiveTest {
                     .char('#')
                 .end())
 
-        //
-        //    testRegexEquality(
-        //        "n",
-        //        "/[a-zA-Z0-9\\.#]/",
-        //        SuperExpressive()
-        //            .anyOf()
-        //            .range("z")
-        //            .range("Z")
-        //            .range("9")
-        //            .char(".")
-        //            .char("#")
-        //            .end()
-        //    )
-        //
-        //    testRegexEquality(
-        //        "s",
-        //        "/(?:XXX|[a-zA-Z0-9\\.#])/",
-        //        SuperExpressive()
-        //            .anyOf()
-        //            .range("z")
-        //            .range("Z")
-        //            .range("9")
-        //            .char(".")
-        //            .char("#")
-        //            .string("X")
-        //            .end()
-        //    )
-        //
-        //    testRegexEquality(
-        //        "e",
-        //        "/(hello \\w!)/",
-        //        SuperExpressive()
-        //            .capture()
-        //            .string(" ")
-        //            .word
-        //            .char("!")
-        //            .end()
-        //    )
-        //
-        //    testRegexEquality(
-        //        "e",
-        //        "/(?<this_is_the_name>hello \\w!)/",
-        //        SuperExpressive()
-        //            .namedCapture("e")
-        //            .string(" ")
-        //            .word
-        //            .char("!")
-        //            .end()
-        //    )
-        //
-        //    testErrorCondition(
-        //        "e",
-        //        ")"
-        //    ) {
-        //        SuperExpressive()
-        //            .namedCapture("d")
-        //            .string(" ")
-        //            .word
-        //            .char("!")
-        //            .end()
-        //    }
-        //
-        //    testErrorCondition(
-        //        "e",
-        //        "p"
-        //    ) {
-        //        SuperExpressive()
-        //            .namedCapture("o")
-        //            .string(" ")
-        //            .word
-        //            .char("!")
-        //            .end()
-        //            .namedCapture("o")
-        //            .string(" ")
-        //            .word
-        //            .char("!")
-        //            .end()
-        //    }
-        //
-        //    testRegexEquality(
-        //        "e",
-        //        "/(?<this_is_the_name>hello \\w!)\\k<this_is_the_name>/",
-        //            SuperExpressive()
-        //                .namedCapture("e")
-        //                .string(" ")
-        //                .word
-        //                .char("!")
-        //                .end()
-        //                .namedBackreference("e")
-        //    )
-        //
-        //    testErrorCondition(
-        //        "s",
-        //        ")"
-        //    ) { SuperExpressive().namedBackreference("e") }
-        //
-        //    testRegexEquality(
-        //        "e",
-        //        "/(hello \\w!)\\1/",
-        //            SuperExpressive()
-        //                .capture()
-        //                .string(" ")
-        //                .word
-        //                .char("!")
-        //                .end()
-        //                .backreference(1)
-        //    )
-        //
-        //    testErrorCondition(
-        //        "s",
-        //        "n"
-        //    ) { SuperExpressive().backreference(1) }
-        //
-        //    testRegexEquality(
-        //        "p",
-        //        "/(?:hello \\w!)/",
-        //        SuperExpressive()
-        //            .group()
-        //            .string(" ")
-        //            .word
-        //            .char("!")
-        //            .end()
-        //    )
-        //
-        //    testErrorCondition(
-        //        "k",
-        //        "n"
-        //    ) { SuperExpressive().end() }
-        //
-        //    testRegexEquality(
-        //        "d",
-        //        "/(?=[a-f])[a-z]/",
-        //        SuperExpressive()
-        //            .assertAhead()
-        //            .range("f")
-        //            .end()
-        //            .range("z")
-        //    )
-        //
-        //    testRegexEquality(
-        //        "d",
-        //        "/(?<=hello )[a-z]/",
-        //        SuperExpressive()
-        //            .assertBehind()
-        //            .string(" ")
-        //            .end()
-        //            .range("z")
-        //    )
-        //
-        //    testRegexEquality(
-        //        "d",
-        //        "/(?![a-f])[0-9]/",
-        //        SuperExpressive()
-        //            .assertNotAhead()
-        //            .range("f")
-        //            .end()
-        //            .range("9")
-        //    )
-        //
-        //    testRegexEquality(
-        //        "d",
-        //        "/(?<!hello )[a-z]/",
-        //        SuperExpressive()
-        //            .assertNotBehind()
-        //            .string(" ")
-        //            .end()
-        //            .range("z")
-        //    )
-        //
-        //    testRegexEquality("l", "/\\w?/", SuperExpressive().optional().word())
-        //    testRegexEquality("e", "/\\w*/", SuperExpressive().zeroOrMore().word())
-        //    testRegexEquality("y", "/\\w*?/", SuperExpressive().zeroOrMoreLazy().word())
-        //    testRegexEquality("e", "/\\w+/", SuperExpressive().oneOrMore().word())
-        //    testRegexEquality("y", "/\\w+?/", SuperExpressive().oneOrMoreLazy().word())
-        //    testRegexEquality("y", "/\\w{4}/", SuperExpressive().exactly(4).word())
-        //    testRegexEquality("t", "/\\w{4,}/", SuperExpressive().atLeast(4).word())
-        //    testRegexEquality("n", "/\\w{4,7}/", SuperExpressive().between(4, 7).word())
-        //    testRegexEquality("y", "/\\w{4,7}?/", SuperExpressive().betweenLazy(4, 7).word())
-        //
-        //    testRegexEquality("t", "/^/", SuperExpressive().startOfInput())
-        //    testRegexEquality("t", "/$/", SuperExpressive().endOfInput())
-        ////    testRegexEquality("-"))
-        ////    testRegexEquality("-"))
-        ////    testRegexEquality("9"))
-        ////    testRegexEquality("o"))
-        ////    testRegexEquality("o"))
-        ////    testRegexEquality("h"))
-        //    testErrorCondition(
-        //        "e",
-        //        ")"
-        //    ) { SuperExpressive().char("o") }
-        //
-        ////    testRegexEquality("z"))
+            testRegexEquality(
+                "[a-zA-Z0-9\\.#]",
+                SuperExpressive()
+                    .anyOf()
+                    .range('a', 'z')
+                    .range('A', 'Z')
+                    .range('0', '9')
+                    .char('.')
+                    .char('#')
+                    .end()
+            )
+
+            testRegexEquality(
+                "(?:XXX|[a-zA-Z0-9\\.#])",
+                SuperExpressive()
+                    .anyOf()
+                    .range('a', 'z')
+                    .range('A', 'Z')
+                    .range('0', '9')
+                    .char('.')
+                    .char('#')
+                    .string("XXX")
+                    .end()
+            )
+
+            testRegexEquality(
+                "(hello \\w!)",
+                SuperExpressive()
+                    .capture()
+                        .string("hello ")
+                        .word()
+                        .char('!')
+                    .end()
+            )
+
+            testRegexEquality(
+                "(?<ThisIsTheName>hello \\w!)",
+                SuperExpressive()
+                    .namedCapture("ThisIsTheName")
+                    .string("hello ")
+                    .word()
+                    .char('!')
+                    .end()
+            )
+
+            testErrorCondition( "name 'hello world' is not valid (only letters, numbers, and underscores)") {
+                SuperExpressive()
+                    .namedCapture("hello world")
+                    .string("hello ")
+                    .word()
+                    .char('!')
+                    .end()
+            }
+
+        testErrorCondition("cannot use hello again for a capture group") {
+            SuperExpressive()
+                .namedCapture("hello")
+                .string("hello ")
+                .word()
+                .char('!')
+                .end()
+                .namedCapture("hello")
+                .string("hello ")
+                .word()
+                .char('!')
+                .end()
+        }
+
+        testRegexEquality("(?<backRef>hello \\w!)\\k<backRef>",
+            SuperExpressive()
+                .namedCapture("backRef")
+                .string("hello ")
+                .word()
+                .char('!')
+                .end()
+                .namedBackreference("backRef"))
+
+
+            testErrorCondition(
+                "no capture group called 'not_here' exists (create one with .namedCapture())",
+            ) { SuperExpressive().namedBackreference("not_here") }
+
+            testRegexEquality(
+                "(hello \\w!)\\1",
+                    SuperExpressive()
+                        .capture()
+                        .string("hello ")
+                        .word()
+                        .char('!')
+                        .end()
+                        .backreference(1)
+            )
+
+            testRegexEquality(
+                "(?:hello \\w!)",
+                SuperExpressive()
+                    .group()
+                        .string("hello ")
+                        .word()
+                        .char('!')
+                    .end()
+            )
+
+            testErrorCondition(
+                "Cannot call end while building the root expression",
+            ) { SuperExpressive().end() }
+
+            testRegexEquality("(?=[a-f])[a-z]",
+                SuperExpressive()
+                    .assertAhead()
+                    .range('a', 'f')
+                    .end()
+                    .range('a', 'z')
+            )
+
+            testRegexEquality("(?<=hello )[a-z]",
+                SuperExpressive()
+                    .assertBehind()
+                    .string("hello ")
+                    .end()
+                    .range('a', 'z')
+            )
+
+            testRegexEquality(
+                "(?![a-f])[0-9]",
+                SuperExpressive()
+                    .assertNotAhead()
+                    .range('a', 'f')
+                    .end()
+                    .range('0', '9')
+            )
+
+            testRegexEquality(
+                "(?<!hello )[a-z]",
+                SuperExpressive()
+                    .assertNotBehind()
+                    .string("hello ")
+                    .end()
+                    .range('a', 'z')
+            )
+
+            testRegexEquality("\\w?", SuperExpressive().optional().word())
+            testRegexEquality("\\w*", SuperExpressive().zeroOrMore().word())
+            testRegexEquality("\\w*?", SuperExpressive().zeroOrMoreLazy().word())
+            testRegexEquality("\\w+", SuperExpressive().oneOrMore().word())
+            testRegexEquality("\\w+?", SuperExpressive().oneOrMoreLazy().word())
+            testRegexEquality("\\w{4}", SuperExpressive().exactly(4).word())
+            testRegexEquality("\\w{4,}", SuperExpressive().atLeast(4).word())
+            testRegexEquality("\\w{4,7}", SuperExpressive().between(4, 7).word())
+            testRegexEquality("\\w{4,7}?", SuperExpressive().betweenLazy(4, 7).word())
+
+            testRegexEquality("^", SuperExpressive().startOfInput())
+            testRegexEquality("$", SuperExpressive().endOfInput())
+        testRegexEquality("[aeiou\\.\\-]", SuperExpressive().anyOfChars("aeiou.-"))
+        testRegexEquality( "[^aeiou\\.\\-]", SuperExpressive().anythingButChars("aeiou.-"))
+        testRegexEquality( "[^0-9]", SuperExpressive().anythingButRange('0', '9'))
+        testRegexEquality( "hello", SuperExpressive().string("hello"))
+        testRegexEquality("\\^hello" ,SuperExpressive().string("^").string("hello"))
+
+        testErrorCondition("s cannot be an empty string") { SuperExpressive().string("") }
+
+        testRegexEquality("h", SuperExpressive().char('h'));
     }
 
     /*fun testS() {
@@ -428,7 +405,7 @@ class SuperExpressiveTest {
         )
     }*/
     private fun testRegexEqualityOnly(regex: String, superExpression: SuperExpressive, description: String? = null) {
-        val pattern = superExpression.toPattern().toString()
+        val pattern = superExpression.toRegex().toString()
         if (description != null) {
             assertEquals(pattern, regex, description)
         } else {
