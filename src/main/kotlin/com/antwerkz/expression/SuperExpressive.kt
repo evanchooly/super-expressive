@@ -75,8 +75,8 @@ class SuperExpressive() {
                 }
                 "anyOfChars" -> "[${el.value}]"
                 "anythingButChars" -> "[^${el.value}]"
-                "namedBackreference" -> "\\k<${(el as DeferredType).name}>"
-                "backreference" -> "\\${(el as DeferredType).index}"
+                "namedBackreference" -> "\\k<${el.name}>"
+                "backreference" -> "\\${el.index}"
                 "subexpression" -> (el.value as List<Type>).joinToString("") { evaluate(it) }
                 "optional",
                 "zeroOrMore",
@@ -85,7 +85,7 @@ class SuperExpressive() {
                 "oneOrMoreLazy", -> {
                     val inner = evaluate(el.value as Type)
                     val withGroup =
-                        if ((el.value as RealizedType).quantifierRequiresGroup) "(?:${inner})"
+                        if ((el.value as Type).quantifierRequiresGroup) "(?:${inner})"
                         else inner
                     val symbol = quantifierTable[el.type]
                     return "${withGroup}${symbol}"
@@ -96,12 +96,13 @@ class SuperExpressive() {
                 "exactly", -> {
                     val inner = evaluate(el.value as Type)
                     val withGroup =
-                        if ((el.value as RealizedType).quantifierRequiresGroup) "(?:${inner})"
+                        if ((el.value as Type).quantifierRequiresGroup) "(?:${inner})"
                         else inner
                     val func = times[el.type]!!
-                    return "${withGroup}${func((el as DeferredType).times)}"
+                    return "${withGroup}${func(el.times)}"
                 }
                 "anythingButString" -> {
+                    TODO()
                     val chars = "" // el.value.split("").map(c => `[^${c}]`).join('')
                     return "(?:${chars})"
                 }
@@ -144,7 +145,6 @@ class SuperExpressive() {
                     return "(${evaluated})"
                 }
                 "namedCapture" -> {
-                    el as DeferredType
                     val list = el.value as List<Type>
                     val evaluated = list.joinToString("") { evaluate(it) }
                     return "(?<${el.name}>${evaluated})"
@@ -364,7 +364,7 @@ class SuperExpressive() {
         return pattern.ifBlank { "(?:)" } to this.state.flags.options
     }
 
-    private fun frameCreatingElement(type: DeferredType) = with {
+    private fun frameCreatingElement(type: Type) = with {
         state.stack.add(StackFrame(type))
     }
 
@@ -440,7 +440,7 @@ class SuperExpressive() {
         val nextEl: Type = el.copy()
 
         if (nextEl.type == "backreference") {
-            (nextEl as DeferredType).index += parent.state.totalCaptureGroups
+            nextEl.index += parent.state.totalCaptureGroups
         }
 
         if (nextEl.type == "capture") {
@@ -448,7 +448,6 @@ class SuperExpressive() {
         }
 
         if (nextEl.type == "namedCapture") {
-            nextEl as DeferredType
             val groupName =
                 if (options.namespace != null) "${options.namespace}${nextEl.name}"
                 else nextEl.name!!
@@ -458,7 +457,6 @@ class SuperExpressive() {
         }
 
         if (nextEl.type == "namedBackreference") {
-            nextEl as DeferredType
             nextEl.name = options.namespace?.let { "${it}${nextEl.name}" } ?: nextEl.name
         }
 

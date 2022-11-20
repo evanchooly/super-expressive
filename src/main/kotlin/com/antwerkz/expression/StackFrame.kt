@@ -10,7 +10,7 @@ data class StackFrame(
     ) : this(
         original.type.copy(),
         original.quantifier?.copy(),
-        original.elements.map { it.copy<Type>() }.toMutableList()
+        original.elements.map { it.copy() }.toMutableList()
     )
     fun quantifier(quantifier: Type) {
         if (this.quantifier != null) {
