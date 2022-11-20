@@ -3,8 +3,15 @@ package com.antwerkz.expression
 data class StackFrame(
     val type: Type,
     var quantifier: Type? = null,
-    val elements: MutableList<Type> = mutableListOf()
+    var elements: MutableList<Type> = mutableListOf()
 ) {
+    constructor(
+        original: StackFrame
+    ) : this(
+        original.type.copy(),
+        original.quantifier?.copy(),
+        original.elements.map { it.copy<Type>() }.toMutableList()
+    )
     fun quantifier(quantifier: Type) {
         if (this.quantifier != null) {
             throw IllegalStateException(

@@ -51,8 +51,8 @@ class Types {
         fun assertBehind() = DeferredType("assertBehind") { containsChildren = true }
         fun assertNotBehind() = DeferredType("assertNotBehind") { containsChildren = true }
 
-        fun subexpression() =
-            RealizedType("subexpression") {
+        fun subexpression(list: List<Type>) =
+            RealizedType("subexpression", list) {
                 containsChildren = true
                 quantifierRequiresGroup = true
             }
@@ -86,19 +86,22 @@ class Types {
 }
 
 interface Type {
+    var containsChildren: Boolean
     val type: String
     var value: Any?
     fun value(elements: MutableList<Type>): Type
+
+    fun <T : Type> copy(): T
 }
 
 open class RealizedType(override val type: String, options: RealizedType.() -> Unit = {}) : Type {
-    var containsChildren: Boolean = false
+    override var containsChildren: Boolean = false
     var quantifierRequiresGroup: Boolean = false
     override var value: Any? = null
 
     constructor(
         type: String,
-        value: Any,
+        value: Any?,
         options: RealizedType.() -> Unit = {}
     ) : this(type, options) {
         this.value = value
@@ -108,8 +111,17 @@ open class RealizedType(override val type: String, options: RealizedType.() -> U
         this.options()
     }
 
+    constructor(original: RealizedType) : this(original.type, original.value) {
+        containsChildren = original.containsChildren
+        quantifierRequiresGroup = original.quantifierRequiresGroup
+    }
+
+    override fun <T : Type> copy(): T {
+        return RealizedType(this) as T
+    }
+
     override fun toString(): String {
-        return "Type(name='$type', quantifierRequiresGroup=$quantifierRequiresGroup)"
+        return "Type(name='$type', value='$value', quantifierRequiresGroup=$quantifierRequiresGroup)"
     }
 
     override fun value(elements: MutableList<Type>): RealizedType {
@@ -124,7 +136,7 @@ class DeferredType(override val type: String, options: DeferredType.() -> Unit =
     var index: Int = 0
 
     override var value: Any? = null
-    var containsChildren: Boolean = false
+    override var containsChildren: Boolean = false
     constructor(
         type: String,
         value: Any?,
@@ -142,6 +154,10 @@ class DeferredType(override val type: String, options: DeferredType.() -> Unit =
 
     init {
         this.options()
+    }
+
+    override fun <T : Type> copy(): T {
+        return DeferredType(this) as T
     }
 
     override fun value(elements: MutableList<Type>): Type {

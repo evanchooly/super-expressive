@@ -4,6 +4,33 @@ import org.testng.Assert.fail
 import org.testng.annotations.Test
 
 class SuperExpressiveTest {
+    companion object {
+        val simpleSubExpression = SuperExpressive().string("hello").anyChar().string("world")
+        val flagsSubExpression =
+            SuperExpressive()
+                .ignoreCase()
+                .multiLine()
+                .allowComments()
+                .canonicalEquivalance()
+                .dotAll()
+                .literal()
+                .unixLines()
+                .string("hello")
+                .anyChar()
+                .string("world")
+        val startEndSubExpression =
+            SuperExpressive().startOfInput().string("hello").anyChar().string("world").endOfInput()
+        val namedCaptureSubExpression =
+            SuperExpressive()
+                .namedCapture("module")
+                .exactly(2)
+                .anyChar()
+                .end()
+                .namedBackreference("module")
+        val indexedBackreferenceSubexpression =
+            SuperExpressive().capture().exactly(2).anyChar().end().backreference(1)
+    }
+
     private fun testErrorCondition(errorMsg: String, function: () -> SuperExpressive) {
         try {
             val regex = function().toRegex()
@@ -17,17 +44,9 @@ class SuperExpressiveTest {
     fun tests() {
         testRegexEquality("(?:)", SuperExpressive())
 
-        testRegexEquality(
-            "(?:)",
-            SuperExpressive().dotMatchesAll(),
-            setOf(RegexOption.DOT_MATCHES_ALL)
-        )
-        testRegexEquality(
-            "(?:)",
-            SuperExpressive().caseInsensitive(),
-            setOf(RegexOption.IGNORE_CASE)
-        )
-        testRegexEquality("(?:)", SuperExpressive().multiline(), setOf(RegexOption.MULTILINE))
+        testRegexEquality("(?:)", SuperExpressive().dotAll(), setOf(RegexOption.DOT_MATCHES_ALL))
+        testRegexEquality("(?:)", SuperExpressive().ignoreCase(), setOf(RegexOption.IGNORE_CASE))
+        testRegexEquality("(?:)", SuperExpressive().multiLine(), setOf(RegexOption.MULTILINE))
         testRegexEquality("(?:)", SuperExpressive().unixLines(), setOf(RegexOption.UNIX_LINES))
 
         testRegexEquality(".", SuperExpressive().anyChar())
@@ -179,224 +198,216 @@ class SuperExpressiveTest {
         testRegexEquality("h", SuperExpressive().char('h'))
     }
 
-    /*fun testS() {
-        testErrorCondition(
-            "e",
-            "e"
-        ) { SuperExpressive().subexpression("e") }
-        val simpleSubExpression = SuperExpressive()
-            .string("o")
-            .anyChar()
-            .string("d")
-
+    @Test
+    fun simpleSubexpression() {
         testRegexEquality(
-            "e",
-            "/^\\d{3,}hello.world[0-9]$/",
+            "^\\d{3,}hello.world[0-9]$",
             SuperExpressive()
                 .startOfInput()
-                .atLeast(3).digit
+                .atLeast(3)
+                .digit()
                 .subexpression(simpleSubExpression)
-                .range("9")
+                .range('0', '9')
                 .endOfInput()
         )
+    }
 
-        testRegexEquality(
-            "d",
-            "/^\\d{3,}(?:hello.world)+[0-9]$/",
+    @Test
+    fun deeplyNestedSubexpressions() {
+        val nestedSubexpression = SuperExpressive().exactly(2).anyChar()
+        val firstLayerSubexpression =
             SuperExpressive()
-                .startOfInput()
-                .atLeast(3).digit()
-                .oneOrMore.subexpression(simpleSubExpression)
-                .range("9")
-                .endOfInput()
-        )
-        val flagsSubExpression = SuperExpressive()
-            .allowMultipleMatches()
-            .unicode()
-            .lineByLine()
-            .caseInsensitive()
-            .string("o")
-            .anyChar()
-            .string("d")
-
-        testRegexEquality(
-            "e",
-            "/^\\d{3,}hello.world[0-9]$/gymiu",
-            SuperExpressive()
-                .sticky()
-                .startOfInput()
-                .atLeast(3).digit()
-                .subexpression(flagsSubExpression) { "ignoreFlags": false }
-                .range("9")
-                .endOfInput()
-        )
-
-        testRegexEquality(
-            "e",
-            "/^\\d{3,}hello.world[0-9]$/y",
-            SuperExpressive()
-                .sticky()
-                .startOfInput()
-                .atLeast(3).digit()
-                .subexpression(flagsSubExpression)
-                .range("9")
-                .endOfInput()
-        )
-        val startEndSubExpression = SuperExpressive()
-            .startOfInput()
-            .string("o")
-            .anyChar()
-            .string("d")
-            .endOfInput()
-
-        testRegexEquality(
-            "e",
-            "/\\d{3,}^hello.world$[0-9]/",
-            SuperExpressive()
-                .atLeast(3).digit()
-                .subexpression(startEndSubExpression) { ignoreStartAndEnd: false }
-                .range("9")
-        )
-
-        testRegexEquality(
-            "e",
-            "/\\d{3,}hello.world[0-9]/",
-            SuperExpressive()
-                .atLeast(3).digit()
-                .subexpression(startEndSubExpression)
-                .range("9")
-        )
-
-        testErrorCondition(
-            "n",
-            "n"
-        ) {
-            SuperExpressive()
-                .startOfInput()
-                .atLeast(3).digit()
-                .subexpression(startEndSubExpression) { ignoreStartAndEnd: false }
-                .range("9")
-        }
-
-        testErrorCondition(
-            "n",
-            "n"
-        ) {
-            SuperExpressive()
-                .endOfInput()
-                .subexpression(startEndSubExpression) { ignoreStartAndEnd: false }
-        }
-        val namedCaptureSubExpression = SuperExpressive()
-            .namedCapture("e")
-            .exactly(2).anyChar()
-            .end()
-            .namedBackreference("e")
-
-        testRegexEquality(
-            "g",
-            "/\\d{3,}(?<module>.{2})\\k<module>[0-9]/",
-            SuperExpressive()
-                .atLeast(3).digit()
-                .subexpression(namedCaptureSubExpression)
-                .range("9")
-        )
-
-        testRegexEquality(
-            "g",
-            "/\\d{3,}(?<yolomodule>.{2})\\k<yolomodule>[0-9]/",
-            SuperExpressive()
-                .atLeast(3).digit()
-                .subexpression(namedCaptureSubExpression) { "namespace": "o" }
-                .range("9")
-        )
-
-        testErrorCondition(
-            ")",
-            "p"
-        ) {
-            SuperExpressive()
-                .namedCapture("e")
-                .atLeast(3).digit()
+                .string("outer begin")
+                .namedCapture("innerSubExpression")
+                .optional()
+                .subexpression(nestedSubexpression)
                 .end()
-                .subexpression(namedCaptureSubExpression)
-                .range("9")
-        }
-
-        testErrorCondition(
-            ")",
-            "p"
-        ) {
-            SuperExpressive()
-                .namedCapture("e")
-                .atLeast(3).digit()
-                .end()
-                .subexpression(namedCaptureSubExpression) { "namespace": "o" }
-                .range("9")
-        }
-        val indexedBackreferenceSubexpression = SuperExpressive()
-            .capture()
-            .exactly(2).anyChar()
-            .end()
-            .backreference(1)
+                .string("outer end")
 
         testRegexEquality(
-            "g",
-            "/(\\d{3,})(.{2})\\2\\1[0-9]/",
+            "(\\d{3,})outer begin(?<innerSubExpression>(?:.{2})?)outer end\\1[0-9]",
             SuperExpressive()
                 .capture()
-                .atLeast(3).digit()
-                .end()
-                .subexpression(indexedBackreferenceSubexpression)
-                .backreference(1)
-                .range("9")
-        )
-        val nestedSubexpression = SuperExpressive().exactly(2).anyChar
-        val firstLayerSubexpression = SuperExpressive()
-            .string("n")
-            .namedCapture("n")
-            .optional.subexpression(nestedSubexpression)
-            .end()
-            .string("d")
-
-        testRegexEquality(
-            "s",
-            "/(\\d{3,})outer begin(?<innerSubExpression>(?:.{2})?)outer end\\1[0-9]/",
-            SuperExpressive()
-                .capture()
-                .atLeast(3).digit
+                .atLeast(3)
+                .digit()
                 .end()
                 .subexpression(firstLayerSubexpression)
                 .backreference(1)
-                .range("9")
+                .range('0', '9')
         )
-    }*/
-    private fun testRegexEqualityOnly(
-        regex: String,
-        superExpression: SuperExpressive,
-        description: String? = null
-    ) {
-        val pattern = superExpression.toRegex().toString()
-        if (description != null) {
-            assertEquals(pattern, regex, description)
-        } else {
-            assertEquals(pattern, regex)
+    }
+
+    @Test
+    fun indexedBackReferencing() {
+        testRegexEquality(
+            "(\\d{3,})(.{2})\\2\\1[0-9]",
+            SuperExpressive()
+                .capture()
+                .atLeast(3)
+                .digit()
+                .end()
+                .subexpression(indexedBackreferenceSubexpression)
+                .backreference(1)
+                .range('0', '9')
+        )
+    }
+
+    @Test
+    fun groupNameCollisionWithNamespace() {
+        testErrorCondition("cannot use yolomodule again for a capture group") {
+            SuperExpressive()
+                .namedCapture("yolomodule")
+                .atLeast(3)
+                .digit()
+                .end()
+                .subexpression(namedCaptureSubExpression) { namespace = "yolo" }
+                .range('0', '9')
         }
+    }
+
+    @Test
+    fun groupNameCollisionNoNamespace() {
+        testErrorCondition("cannot use module again for a capture group") {
+            SuperExpressive()
+                .namedCapture("module")
+                .atLeast(3)
+                .digit()
+                .end()
+                .subexpression(namedCaptureSubExpression)
+                .range('0', '9')
+        }
+    }
+
+    @Test
+    fun namespacing() {
+        testRegexEquality(
+            "\\d{3,}(?<yolomodule>.{2})\\k<yolomodule>[0-9]",
+            SuperExpressive()
+                .atLeast(3)
+                .digit()
+                .subexpression(namedCaptureSubExpression) { namespace = "yolo" }
+                .range('0', '9')
+        )
+    }
+
+    @Test
+    fun noNamespacing() {
+        testRegexEquality(
+            "\\d{3,}(?<module>.{2})\\k<module>[0-9]",
+            SuperExpressive()
+                .atLeast(3)
+                .digit()
+                .subexpression(namedCaptureSubExpression)
+                .range('0', '9')
+        )
+    }
+
+    @Test
+    fun endDefinedInSubAndMain() {
+        testErrorCondition(
+            "parent regex already has a defined end of input. You can ignore a subexpressions startOfInput."
+        ) {
+            SuperExpressive().endOfInput().subexpression(startEndSubExpression) {
+                ignoreStartAndEnd = false
+            }
+        }
+    }
+
+    @Test
+    fun startDefinedInSubAndMain() {
+        testErrorCondition(
+            "The parent regex already has a defined start of input. You can ignore a subexpressions startOfInput"
+        ) {
+            SuperExpressive()
+                .startOfInput()
+                .atLeast(3)
+                .digit()
+                .subexpression(startEndSubExpression) { ignoreStartAndEnd = false }
+                .range('0', '9')
+        }
+    }
+
+    @Test
+    fun ignoreStartEnd() {
+        testRegexEquality(
+            "\\d{3,}hello.world[0-9]",
+            SuperExpressive()
+                .atLeast(3)
+                .digit()
+                .subexpression(startEndSubExpression)
+                .range('0', '9'),
+            setOf()
+        )
+    }
+
+    @Test
+    fun dontIgnoreStartEnd() {
+        testRegexEquality(
+            "\\d{3,}^hello.world$[0-9]",
+            SuperExpressive()
+                .atLeast(3)
+                .digit()
+                .subexpression(startEndSubExpression) { ignoreStartAndEnd = false }
+                .range('0', '9')
+        )
+    }
+
+    @Test
+    fun ignoreFlags() {
+        testRegexEquality(
+            "^\\d{3,}hello.world[0-9]$",
+            SuperExpressive()
+                .startOfInput()
+                .atLeast(3)
+                .digit()
+                .subexpression(flagsSubExpression)
+                .range('0', '9')
+                .endOfInput(),
+            setOf()
+        )
+    }
+
+    @Test
+    fun dontIgnoreFlags() {
+        testRegexEquality(
+            "^\\d{3,}hello.world[0-9]$",
+            SuperExpressive()
+                .startOfInput()
+                .atLeast(3)
+                .digit()
+                .subexpression(flagsSubExpression) { ignoreFlags = false }
+                .range('0', '9')
+                .endOfInput(),
+            setOf(*RegexOption.values())
+        )
+    }
+
+    @Test
+    fun simpleQuantifiedSubexp() {
+        testRegexEquality(
+            "^\\d{3,}(?:hello.world)+[0-9]$",
+            SuperExpressive()
+                .startOfInput()
+                .atLeast(3)
+                .digit()
+                .oneOrMore()
+                .subexpression(simpleSubExpression)
+                .range('0', '9')
+                .endOfInput()
+        )
+    }
+
+    private fun testRegexEqualityOnly(expected: String, superExpression: SuperExpressive) {
+        val regex = superExpression.toRegex()
+        assertEquals(regex.toString(), expected)
     }
 
     private fun testRegexEquality(
         expected: String,
         superExpression: SuperExpressive,
-        flags: Set<RegexOption> = setOf(),
-        description: String? = null
+        flags: Set<RegexOption> = setOf()
     ) {
-        testRegexEqualityOnly(expected, superExpression, description)
-        val regex = superExpression.toRegex()
-        if (description != null) {
-            assertEquals(regex.toString(), expected, description)
-            assertEquals(regex.options, flags, description)
-        } else {
-            assertEquals(regex.toString(), expected)
-            assertEquals(regex.options, flags)
-        }
+        testRegexEqualityOnly(expected, superExpression)
+        assertEquals(superExpression.toRegex().options, flags)
     }
 }

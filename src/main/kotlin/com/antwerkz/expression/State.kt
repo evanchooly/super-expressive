@@ -12,8 +12,8 @@ class State() {
     constructor(state: State) : this() {
         hasDefinedStart = state.hasDefinedStart
         hasDefinedEnd = state.hasDefinedEnd
-        flags = Flags(state.flags)
-        stack = ArrayList(state.stack)
+        flags = state.flags.copy()
+        stack = state.stack.map { StackFrame(it) }.toMutableList()
         namedGroups = ArrayList(state.namedGroups)
         totalCaptureGroups = state.totalCaptureGroups
     }

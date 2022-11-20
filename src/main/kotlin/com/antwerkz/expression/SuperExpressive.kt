@@ -77,8 +77,7 @@ class SuperExpressive() {
                 "anythingButChars" -> "[^${el.value}]"
                 "namedBackreference" -> "\\k<${(el as DeferredType).name}>"
                 "backreference" -> "\\${(el as DeferredType).index}"
-                //                "subexpression" ->
-                // el.value.map(SuperExpressive[evaluate]).join('')
+                "subexpression" -> (el.value as List<Type>).joinToString("") { evaluate(it) }
                 "optional",
                 "zeroOrMore",
                 "zeroOrMoreLazy",
@@ -94,8 +93,7 @@ class SuperExpressive() {
                 "betweenLazy",
                 "between",
                 "atLeast",
-                "exactly",
-                -> {
+                "exactly", -> {
                     val inner = evaluate(el.value as Type)
                     val withGroup =
                         if ((el.value as RealizedType).quantifierRequiresGroup) "(?:${inner})"
@@ -104,10 +102,9 @@ class SuperExpressive() {
                     return "${withGroup}${func((el as DeferredType).times)}"
                 }
                 "anythingButString" -> {
-                    val chars = "" //el.value.split("").map(c => `[^${c}]`).join('')
+                    val chars = "" // el.value.split("").map(c => `[^${c}]`).join('')
                     return "(?:${chars})"
                 }
-
                 "assertAhead" -> {
                     val list = el.value as List<Type>
                     val evaluated = list.joinToString("") { evaluate(it) }
@@ -192,8 +189,6 @@ class SuperExpressive() {
         return next
     }
 
-    fun dotMatchesAll() = with { state.flags.d = true }
-
     private fun applyQuantifier(element: Type): Type {
         val currentFrame = getCurrentFrame()
         val quantifier = currentFrame.quantifier
@@ -232,8 +227,13 @@ class SuperExpressive() {
     }
 
     fun carriageReturn() = matchElement(Types.carriageReturn())
-
-    fun caseInsensitive() = with { state.flags.i = true }
+    fun ignoreCase() = with { state.flags.ignoreCase() }
+    fun multiLine() = with { state.flags.multiLine() }
+    fun allowComments() = with { state.flags.allowComments() }
+    fun canonicalEquivalance() = with { state.flags.canonicalEquivalance() }
+    fun dotAll() = with { state.flags.dotAll() }
+    fun literal() = with { state.flags.literal() }
+    fun unixLines() = with { state.flags.unixLines() }
 
     fun char(c: Char): SuperExpressive {
         return with {
@@ -258,8 +258,6 @@ class SuperExpressive() {
 
     fun group() = frameCreatingElement(Types.group())
 
-    fun multiline() = with { state.flags.m = true }
-
     fun namedBackreference(name: String): SuperExpressive {
         if (!this.state.namedGroups.contains(name)) {
             throw IllegalArgumentException(
@@ -278,6 +276,8 @@ class SuperExpressive() {
     }
 
     private fun trackNamedGroup(name: String) {
+        if (this.state.namedGroups.contains(name))
+            throw IllegalStateException("cannot use ${name} again for a capture group")
         this.state.namedGroups.push(name)
     }
 
@@ -327,7 +327,7 @@ class SuperExpressive() {
     }
 
     fun string(s: String): SuperExpressive {
-        if(s.isEmpty()) {
+        if (s.isEmpty()) {
             throw IllegalArgumentException("s cannot be an empty string")
         }
 
@@ -342,13 +342,11 @@ class SuperExpressive() {
     fun tab() = matchElement(Types.tab())
 
     fun toRegex(): Regex {
-        val (pattern, flags) = getRegexPatternAndFlags()
-        return Regex(pattern, flags.toRegexOptions())
+        val (pattern, options) = getRegexPatternAndFlags()
+        return Regex(pattern, options)
     }
 
     fun toPattern(): Pattern = toRegex().toPattern()
-
-    fun unixLines() = with { state.flags.u = true }
 
     fun whitespaceChar() = matchElement(Types.whitespaceChar())
 
@@ -360,10 +358,10 @@ class SuperExpressive() {
 
     private fun getCurrentFrame(): StackFrame = state.stack.last()
 
-    private fun getRegexPatternAndFlags(): Pair<String, Flags> {
+    private fun getRegexPatternAndFlags(): Pair<String, Set<RegexOption>> {
         val pattern: String = getCurrentElementArray().joinToString("") { evaluate(it) }
 
-        return pattern.ifBlank { "(?:)" } to this.state.flags
+        return pattern.ifBlank { "(?:)" } to this.state.flags.options
     }
 
     private fun frameCreatingElement(type: DeferredType) = with {
@@ -431,5 +429,128 @@ class SuperExpressive() {
         return with {
             getCurrentFrame().elements.push(applyQuantifier(Types.anythingButRange(start, end)))
         }
+    }
+
+    private fun mergeSubexpression(
+        el: Type,
+        options: SubexpressionOptions,
+        parent: SuperExpressive,
+        incrementCaptureGroups: () -> Int
+    ): Type {
+        val nextEl: Type = el.copy()
+
+        if (nextEl.type == "backreference") {
+            (nextEl as DeferredType).index += parent.state.totalCaptureGroups
+        }
+
+        if (nextEl.type == "capture") {
+            incrementCaptureGroups()
+        }
+
+        if (nextEl.type == "namedCapture") {
+            nextEl as DeferredType
+            val groupName =
+                if (options.namespace != null) "${options.namespace}${nextEl.name}"
+                else nextEl.name!!
+
+            parent.trackNamedGroup(groupName)
+            nextEl.name = groupName
+        }
+
+        if (nextEl.type == "namedBackreference") {
+            nextEl as DeferredType
+            nextEl.name = options.namespace?.let { "${it}${nextEl.name}" } ?: nextEl.name
+        }
+
+        if (nextEl.containsChildren) {
+            if (nextEl.value !is List<*>) {
+                nextEl.value =
+                    mergeSubexpression(
+                        nextEl.value as Type,
+                        options,
+                        parent,
+                        incrementCaptureGroups
+                    )
+            } else {
+                nextEl.value =
+                    (nextEl.value as List<Type>).map { e ->
+                        mergeSubexpression(e, options, parent, incrementCaptureGroups)
+                    }
+            }
+        }
+
+        if (nextEl.type == "startOfInput") {
+            if (options.ignoreStartAndEnd) {
+                return Types.noop()
+            }
+
+            if (parent.state.hasDefinedStart) {
+                throw IllegalStateException(
+                    "The parent regex already has a defined start of input. You can ignore a subexpressions " +
+                        "startOfInput/endOfInput markers with the ignoreStartAndEnd option"
+                )
+            }
+
+            if (parent.state.hasDefinedEnd) {
+                throw IllegalStateException(
+                    "The parent regex already has a defined end of input. You can ignore a subexpressions " +
+                        "startOfInput/endOfInput markers with the ignoreStartAndEnd option"
+                )
+            }
+
+            parent.state.hasDefinedStart = true
+        }
+
+        if (nextEl.type == "endOfInput") {
+            if (options.ignoreStartAndEnd) {
+                return Types.noop()
+            }
+
+            if (parent.state.hasDefinedEnd) {
+                throw IllegalStateException(
+                    "The parent regex already has a defined start of input. " +
+                        "You can ignore a subexpressions startOfInput/endOfInput markers with the ignoreStartAndEnd option"
+                )
+            }
+
+            parent.state.hasDefinedEnd = true
+        }
+
+        return nextEl
+    }
+
+    fun subexpression(
+        expr: SuperExpressive,
+        optionsLambda: SubexpressionOptions.() -> Unit = {}
+    ): SuperExpressive {
+        if (expr.state.stack.size != 1) {
+            throw java.lang.IllegalArgumentException(
+                "Cannot call subexpression with a not yet fully specified regex object. (Try " +
+                    "adding a .end() call to match the \"${getCurrentFrame().type.type}\" on the subexpression)"
+            )
+        }
+
+        val options = SubexpressionOptions(optionsLambda)
+
+        val exprNext = expr.with {}
+        val next = with {}
+        var additionalCaptureGroups = 0
+
+        val exprFrame = exprNext.getCurrentFrame()
+        exprFrame.elements =
+            exprFrame.elements
+                .map { e -> mergeSubexpression(e, options, next) { additionalCaptureGroups++ } }
+                .toMutableList()
+
+        next.state.totalCaptureGroups += additionalCaptureGroups
+
+        if (!options.ignoreFlags) {
+            next.state.flags.options += exprNext.state.flags.options
+        }
+
+        val currentFrame = next.getCurrentFrame()
+        currentFrame.elements.push(next.applyQuantifier(Types.subexpression(exprFrame.elements)))
+
+        return next
     }
 }
