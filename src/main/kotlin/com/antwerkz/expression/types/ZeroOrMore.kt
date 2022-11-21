@@ -1,5 +1,6 @@
 package com.antwerkz.expression.types
 
-import com.antwerkz.expression.types.Root.containsChildren
-
-class ZeroOrMore : Type("zeroOrMore", { containsChildren = true }) {}
+class ZeroOrMore : Qualified("zeroOrMore") {
+    override fun evaluate() = evaluate("*")
+    override fun copy() = ZeroOrMore().copy(this)
+}

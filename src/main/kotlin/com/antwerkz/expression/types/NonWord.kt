@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class NonWord : Type("nonWord") {}
+object NonWord : Type("nonWord") {
+    override fun copy() = NonWord
+
+    override fun evaluate() = "\\W"
+}

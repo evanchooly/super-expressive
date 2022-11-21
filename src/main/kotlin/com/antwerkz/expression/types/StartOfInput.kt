@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class StartOfInput : Type("startOfInput") {}
+object StartOfInput : Type("startOfInput") {
+    override fun copy() = StartOfInput
+
+    override fun evaluate() = "^"
+}

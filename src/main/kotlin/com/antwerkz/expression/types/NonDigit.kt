@@ -1,3 +1,6 @@
 package com.antwerkz.expression.types
+object NonDigit : Type("nonDigit") {
+    override fun copy() = NonDigit
 
-class NonDigit : Type("nonDigit") {}
+    override fun evaluate() = "\\D"
+}

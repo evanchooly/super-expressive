@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class NullByte : Type("nullByte") {}
+object NullByte : Type("nullByte") {
+    override fun copy() = NullByte
+
+    override fun evaluate() = "\\0"
+}

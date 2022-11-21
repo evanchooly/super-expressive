@@ -1,5 +1,9 @@
 package com.antwerkz.expression.types
 
-import com.antwerkz.expression.types.Root.containsChildren
+class OptionalType : Qualified("optional") {
+    override fun copy() = OptionalType().copy(this)
 
-class OptionalType : Type("optional", { containsChildren = true }) {}
+    override fun evaluate(): String {
+        return evaluate("?")
+    }
+}

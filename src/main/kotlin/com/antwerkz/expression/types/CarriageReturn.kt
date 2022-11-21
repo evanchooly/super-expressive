@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class CarriageReturn : Type("carriageReturn") {}
+object CarriageReturn : Type("carriageReturn") {
+    override fun copy() = CarriageReturn
+
+    override fun evaluate() = "\\r"
+}

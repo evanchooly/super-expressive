@@ -1,5 +1,7 @@
 package com.antwerkz.expression.types
 
-import com.antwerkz.expression.types.Root.containsChildren
+class ZeroOrMoreLazy : Qualified("zeroOrMoreLazy") {
+    override fun copy() = ZeroOrMoreLazy().copy(this)
 
-class ZeroOrMoreLazy : Type("zeroOrMoreLazy", { containsChildren = true }) {}
+    override fun evaluate() = evaluate("*?")
+}

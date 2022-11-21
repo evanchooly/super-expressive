@@ -7,7 +7,5 @@ class NamedBackReference(private val backReference: String) : Type("namedBackref
 
     override fun copy() = NamedBackReference(name!!).copy(this)
 
-    override fun evaluate(): String {
-        TODO("Not yet implemented")
-    }
+    override fun evaluate() = "\\k<${name}>"
 }

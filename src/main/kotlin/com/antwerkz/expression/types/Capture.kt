@@ -1,5 +1,14 @@
 package com.antwerkz.expression.types
 
-import com.antwerkz.expression.types.Root.containsChildren
+class Capture : Type("capture") {
+    init {
+        containsChildren = true
+    }
+    override fun copy() = Capture().copy(this)
 
-class Capture : Type("capture", { containsChildren = true }) {}
+    override fun evaluate(): String {
+        val list = value as List<Type>
+        val evaluated = list.joinToString("") { it.evaluate() }
+        return "(${evaluated})"
+    }
+}

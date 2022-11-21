@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class Digit : Type("digit") {}
+object Digit : Type("digit") {
+    override fun copy() = Digit
+
+    override fun evaluate() = "\\d"
+}

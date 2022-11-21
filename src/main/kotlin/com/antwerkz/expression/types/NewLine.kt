@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class NewLine : Type("newline") {}
+object NewLine : Type("newline") {
+    override fun copy() = NewLine
+
+    override fun evaluate() = "\\n"
+}

@@ -1,5 +1,14 @@
 package com.antwerkz.expression.types
 
-import com.antwerkz.expression.types.Root.containsChildren
+class AssertNotBehind : Type("assertNotBehind") {
+    init {
+        containsChildren = true
+    }
+    override fun copy() = AssertNotBehind().copy(this)
 
-class AssertNotBehind : Type("assertNotBehind", { containsChildren = true }) {}
+    override fun evaluate(): String {
+        val list = value as List<Type>
+        val evaluated = list.joinToString("") { it.evaluate() }
+        return "(?<!${evaluated})"
+    }
+}

@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class WordBoundary : Type("wordBoundary") {}
+object WordBoundary : Type("wordBoundary") {
+    override fun copy() = WordBoundary
+
+    override fun evaluate() = "\\b"
+}

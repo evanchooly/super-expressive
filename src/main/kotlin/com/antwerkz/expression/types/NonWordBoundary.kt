@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class NonWordBoundary : Type("nonWordBoundary") {}
+object NonWordBoundary : Type("nonWordBoundary") {
+    override fun copy() = NonWord
+
+    override fun evaluate() = "\\B"
+}

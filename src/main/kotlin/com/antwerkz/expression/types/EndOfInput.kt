@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class EndOfInput : Type("endOfInput") {}
+object EndOfInput : Type("endOfInput") {
+    override fun copy() = EndOfInput
+
+    override fun evaluate() = "$"
+}

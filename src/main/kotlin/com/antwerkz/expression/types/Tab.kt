@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class Tab : Type("tab") {}
+object Tab : Type("tab") {
+    override fun copy() = Tab
+
+    override fun evaluate() = "\\t"
+}

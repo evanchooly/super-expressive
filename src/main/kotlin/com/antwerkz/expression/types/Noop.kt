@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class Noop : Type("noop") {}
+object Noop : Type("noop") {
+    override fun copy() = Noop
+
+    override fun evaluate() = ""
+}

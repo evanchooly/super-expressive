@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class WhitespaceChar : Type("whitespaceChar") {}
+object WhitespaceChar : Type("whitespaceChar") {
+    override fun copy() = WhitespaceChar
+
+    override fun evaluate() = "\\s"
+}

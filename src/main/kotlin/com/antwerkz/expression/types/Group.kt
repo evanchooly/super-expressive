@@ -1,5 +1,14 @@
 package com.antwerkz.expression.types
 
-import com.antwerkz.expression.types.Root.containsChildren
+class Group : Type("group") {
+    init {
+        containsChildren = true
+    }
+    override fun copy() = Group().copy(this)
 
-class Group : Type("group", { containsChildren = true }) {}
+    override fun evaluate(): String {
+        val value = value as List<Type>
+        val evaluated = value.joinToString("") { it.evaluate() }
+        return "(?:${evaluated})"
+    }
+}

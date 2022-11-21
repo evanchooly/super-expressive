@@ -1,14 +1,11 @@
 package com.antwerkz.expression.types
 
-class AtLeast(count: Int) : Type("atLeast") {
+class AtLeast(count: Int) : Quantified("atLeast") {
     init {
         times = listOf(count)
-        containsChildren = true
     }
 
     override fun copy() = AtLeast(times[0]).copy(this)
 
-    override fun evaluate(): String {
-        TODO("Not yet implemented")
-    }
+    override fun evaluate() = evaluate("{${times[0]},}")
 }

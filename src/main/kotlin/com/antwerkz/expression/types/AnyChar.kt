@@ -1,3 +1,7 @@
 package com.antwerkz.expression.types
 
-class AnyChar : Type("anyChar") {}
+object AnyChar : Type("anyChar") {
+    override fun copy() = AnyChar
+
+    override fun evaluate() = "."
+}

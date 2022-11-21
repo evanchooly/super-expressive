@@ -16,7 +16,7 @@ class SuperExpressive() {
             return superExpressive
         }
 
-        private fun fuseElements(elements: List<Type>): Pair<String, List<Type>> {
+        internal fun fuseElements(elements: List<Type>): Pair<String, List<Type>> {
             val (fusables, rest) = partition(elements)
             val fused =
                 fusables.joinToString("") { el ->
@@ -46,138 +46,6 @@ class SuperExpressive() {
 
             return fused to rest
         }
-
-        private fun evaluate(el: Type): String {
-            //            return el.evaluate()
-            return when (el.type) {
-                "noop" -> ""
-                "anyChar" -> "."
-                "whitespaceChar" -> "\\s"
-                "nonWhitespaceChar" -> "\\S"
-                "digit" -> "\\d"
-                "nonDigit" -> "\\D"
-                "word" -> "\\w"
-                "nonWord" -> "\\W"
-                "wordBoundary" -> "\\b"
-                "nonWordBoundary" -> "\\B"
-                "startOfInput" -> "^"
-                "endOfInput" -> "$"
-                "newline" -> "\\n"
-                "carriageReturn" -> "\\r"
-                "tab" -> "\\t"
-                //                "nullByte" -> return "\\0"
-                "string" -> el.value as String
-                "char" -> el.value as String
-                "range" -> {
-                    val list = el.value as List<*>
-                    "[${list[0]}-${list[1]}]"
-                }
-                "anythingButRange" -> {
-                    val list = el.value as List<*>
-                    "[^${list[0]}-${list[1]}]"
-                }
-                "anyOfChars" -> "[${el.value}]"
-                "anythingButChars" -> "[^${el.value}]"
-                "namedBackreference" -> "\\k<${el.name}>"
-                "backreference" -> "\\${el.index}"
-                "subexpression" -> (el.value as List<Type>).joinToString("") { evaluate(it) }
-                "optional",
-                "zeroOrMore",
-                "zeroOrMoreLazy",
-                "oneOrMore",
-                "oneOrMoreLazy", -> {
-                    val inner = evaluate(el.value as Type)
-                    val withGroup =
-                        if ((el.value as Type).quantifierRequiresGroup) "(?:${inner})" else inner
-                    val symbol = quantifierTable[el.type]
-                    return "${withGroup}${symbol}"
-                }
-                "betweenLazy",
-                "between",
-                "atLeast",
-                "exactly", -> {
-                    val inner = evaluate(el.value as Type)
-                    val withGroup =
-                        if ((el.value as Type).quantifierRequiresGroup) "(?:${inner})" else inner
-                    val func = times[el.type]!!
-                    return "${withGroup}${func(el.times)}"
-                }
-                "anythingButString" -> {
-                    TODO()
-                    val chars = "" // el.value.split("").map(c => `[^${c}]`).join('')
-                    return "(?:${chars})"
-                }
-                "assertAhead" -> {
-                    val list = el.value as List<Type>
-                    val evaluated = list.joinToString("") { evaluate(it) }
-                    return "(?=${evaluated})"
-                }
-                "assertBehind" -> {
-                    val list = el.value as List<Type>
-                    val evaluated = list.joinToString("") { evaluate(it) }
-                    return "(?<=${evaluated})"
-                }
-                "assertNotAhead" -> {
-                    val list = el.value as List<Type>
-                    val evaluated = list.joinToString("") { evaluate(it) }
-                    return "(?!${evaluated})"
-                }
-                "assertNotBehind" -> {
-                    val list = el.value as List<Type>
-                    val evaluated = list.joinToString("") { evaluate(it) }
-                    return "(?<!${evaluated})"
-                }
-                "anyOf" -> {
-                    var (fused, rest) = fuseElements(el.value as List<Type>)
-
-                    if (rest.isEmpty()) {
-                        return "[${fused}]"
-                    }
-                    val evaluatedRest = rest.map { evaluate(it) }
-                    val separator =
-                        if (evaluatedRest.isNotEmpty() && fused.isNotEmpty()) "|" else ""
-                    val restJoined = evaluatedRest.joinToString("|")
-                    val fusedJoined = if (fused.isNotEmpty()) "[${fused}]" else ""
-                    return "(?:$restJoined${separator}${fusedJoined})"
-                }
-                "capture" -> {
-                    val list = el.value as List<Type>
-                    val evaluated = list.joinToString("") { evaluate(it) }
-                    return "(${evaluated})"
-                }
-                "namedCapture" -> {
-                    val list = el.value as List<Type>
-                    val evaluated = list.joinToString("") { evaluate(it) }
-                    return "(?<${el.name}>${evaluated})"
-                }
-                "group" -> {
-                    val value = el.value as List<Type>
-                    val evaluated = value.joinToString("") { evaluate(it) }
-                    return "(?:${evaluated})"
-                }
-                else ->
-                    throw IllegalArgumentException(
-                        "Can't process unsupported element type: ${el.type}"
-                    )
-            }
-        }
-
-        private val quantifierTable =
-            mapOf(
-                "oneOrMore" to "+",
-                "oneOrMoreLazy" to "+?",
-                "zeroOrMore" to "*",
-                "zeroOrMoreLazy" to "*?",
-                "optional" to "?",
-            )
-
-        private val times =
-            mapOf(
-                "exactly" to { times: List<Int> -> "{${times[0]}}" },
-                "atLeast" to { times: List<Int> -> "{${times[0]},}" },
-                "between" to { times: List<Int> -> "{${times[0]},${times[1]}}" },
-                "betweenLazy" to { times: List<Int> -> "{${times[0]},${times[1]}}?" },
-            )
     }
 
     private constructor(expressive: SuperExpressive) : this() {
@@ -360,7 +228,7 @@ class SuperExpressive() {
     private fun getCurrentFrame(): StackFrame = state.stack.last()
 
     private fun getRegexPatternAndFlags(): Pair<String, Set<RegexOption>> {
-        val pattern: String = getCurrentElementArray().joinToString("") { evaluate(it) }
+        val pattern: String = getCurrentElementArray().joinToString("") { it.evaluate() }
 
         return pattern.ifBlank { "(?:)" } to this.state.flags.options
     }
