@@ -1,5 +1,14 @@
 package com.antwerkz.expression
 
+import com.antwerkz.expression.types.AnyOfChars
+import com.antwerkz.expression.types.BackReference
+import com.antwerkz.expression.types.Capture
+import com.antwerkz.expression.types.CharType
+import com.antwerkz.expression.types.EndOfInput
+import com.antwerkz.expression.types.NamedBackReference
+import com.antwerkz.expression.types.NamedCapture
+import com.antwerkz.expression.types.RangeType
+import com.antwerkz.expression.types.StartOfInput
 import com.antwerkz.expression.types.Type
 import com.antwerkz.expression.types.Types
 import java.util.function.Predicate
@@ -20,7 +29,7 @@ class SuperExpressive() {
             val (fusables, rest) = partition(elements)
             val fused =
                 fusables.joinToString("") { el ->
-                    if (el.type == "char" || el.type == "anyOfChars") {
+                    if (el is CharType || el is AnyOfChars) {
                         el.value.toString()
                     } else {
                         val value = el.value as List<*>
@@ -32,7 +41,9 @@ class SuperExpressive() {
 
         private fun partition(elements: List<Type>): Pair<List<Type>, List<Type>> {
             val predicate =
-                Predicate<Type> { type -> type.type in listOf("range", "char", "anyOfChars") }
+                Predicate<Type> { type ->
+                    type is RangeType || type is CharType || type is AnyOfChars
+                }
             val fused = mutableListOf<Type>()
             val rest = mutableListOf<Type>()
 
@@ -306,15 +317,15 @@ class SuperExpressive() {
     ): Type {
         val nextEl: Type = el.copy()
 
-        if (nextEl.type == "backreference") {
+        if (nextEl is BackReference) {
             nextEl.index += parent.state.totalCaptureGroups
         }
 
-        if (nextEl.type == "capture") {
+        if (nextEl is Capture) {
             incrementCaptureGroups()
         }
 
-        if (nextEl.type == "namedCapture") {
+        if (nextEl is NamedCapture) {
             val groupName =
                 if (options.namespace != null) "${options.namespace}${nextEl.name}"
                 else nextEl.name!!
@@ -323,7 +334,7 @@ class SuperExpressive() {
             nextEl.name = groupName
         }
 
-        if (nextEl.type == "namedBackreference") {
+        if (nextEl is NamedBackReference) {
             nextEl.name = options.namespace?.let { "${it}${nextEl.name}" } ?: nextEl.name
         }
 
@@ -344,7 +355,7 @@ class SuperExpressive() {
             }
         }
 
-        if (nextEl.type == "startOfInput") {
+        if (nextEl is StartOfInput) {
             if (options.ignoreStartAndEnd) {
                 return Types.noop()
             }
@@ -366,7 +377,7 @@ class SuperExpressive() {
             parent.state.hasDefinedStart = true
         }
 
-        if (nextEl.type == "endOfInput") {
+        if (nextEl is EndOfInput) {
             if (options.ignoreStartAndEnd) {
                 return Types.noop()
             }
@@ -391,7 +402,7 @@ class SuperExpressive() {
         if (expr.state.stack.size != 1) {
             throw java.lang.IllegalArgumentException(
                 "Cannot call subexpression with a not yet fully specified regex object. (Try " +
-                    "adding a .end() call to match the \"${getCurrentFrame().type.type}\" on the subexpression)"
+                    "adding a .end() call to match the \"${getCurrentFrame().type.javaClass.simpleName}\" on the subexpression)"
             )
         }
 

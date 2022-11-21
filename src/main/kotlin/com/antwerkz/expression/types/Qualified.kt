@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-abstract class Qualified(type: String) : Type(type) {
+abstract class Qualified : Type() {
     init {
         containsChildren = true
     }

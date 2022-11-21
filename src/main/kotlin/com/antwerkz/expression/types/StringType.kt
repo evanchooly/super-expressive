@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class StringType(value: String) : Type("string", value) {
+class StringType(value: String) : Type(value) {
     init {
         quantifierRequiresGroup = true
     }

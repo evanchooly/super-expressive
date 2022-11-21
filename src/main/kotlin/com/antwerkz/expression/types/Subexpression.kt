@@ -1,7 +1,7 @@
 package com.antwerkz.expression.types
 
 @Suppress("UNCHECKED_CAST")
-class Subexpression(private val list: List<Type>) : Type("subexpression", list) {
+class Subexpression(private val list: List<Type>) : Type(list) {
     init {
         containsChildren = true
         quantifierRequiresGroup = true

@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class RangeType(start: Char, end: Char) : Type("range", listOf(start, end)) {
+class RangeType(start: Char, end: Char) : Type(listOf(start, end)) {
     @Suppress("UNCHECKED_CAST")
     override fun copy(): Type {
         val list = value as List<Char>
