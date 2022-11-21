@@ -12,7 +12,6 @@ import com.antwerkz.expression.types.StartOfInput
 import com.antwerkz.expression.types.Type
 import com.antwerkz.expression.types.Types
 import java.util.function.Predicate
-import java.util.regex.Pattern
 
 class SuperExpressive() {
     private var state = State()
@@ -118,7 +117,7 @@ class SuperExpressive() {
     fun char(c: Char): SuperExpressive {
         return with {
             val currentFrame = getCurrentFrame()
-            currentFrame.elements.push(applyQuantifier(Types.char(escapeSpecial(c.toString()))))
+            currentFrame.elements.push(applyQuantifier(Types.char(c.toString().escapeSpecial())))
         }
     }
 
@@ -188,9 +187,7 @@ class SuperExpressive() {
         return with { getCurrentFrame().elements.push(applyQuantifier(Types.range(start, end))) }
     }
 
-    fun singleLine(): SuperExpressive {
-        TODO("Not yet implemented")
-    }
+    //    fun singleLine(): SuperExpressive = TODO("Not yet implemented")
 
     fun startOfInput(): SuperExpressive {
         return with {
@@ -213,7 +210,7 @@ class SuperExpressive() {
 
         return with {
             val elementValue =
-                if (s.length > 1) Types.string(escapeSpecial(s)) else Types.char(escapeSpecial(s))
+                if (s.length > 1) Types.string(s.escapeSpecial()) else Types.char(s.escapeSpecial())
             val currentFrame = getCurrentFrame()
             currentFrame.elements.push(applyQuantifier(elementValue))
         }
@@ -225,8 +222,6 @@ class SuperExpressive() {
         val (pattern, options) = getRegexPatternAndFlags()
         return Regex(pattern, options)
     }
-
-    fun toPattern(): Pattern = toRegex().toPattern()
 
     fun whitespaceChar() = matchElement(Types.whitespaceChar())
 
@@ -246,9 +241,9 @@ class SuperExpressive() {
 
     private fun frameCreatingElement(type: Type) = with { state.stack.add(StackFrame(type)) }
 
-    private fun escapeSpecial(s: String): String {
+    private fun String.escapeSpecial(): String {
         val specialChars = "\\.^$|?*+()[]{}-".toCharArray().map { it.toString() }
-        var escaped = s
+        var escaped = this
         specialChars.forEach { char -> escaped = escaped.replace(char, "\\${char}") }
         return escaped
     }
@@ -282,7 +277,7 @@ class SuperExpressive() {
 
     fun anyOfChars(chars: String): SuperExpressive {
         return with {
-            val elementValue = Types.anyOfChars(escapeSpecial(chars))
+            val elementValue = Types.anyOfChars(chars.escapeSpecial())
             val currentFrame = getCurrentFrame()
 
             currentFrame.elements.push(applyQuantifier(elementValue))
@@ -290,7 +285,7 @@ class SuperExpressive() {
     }
     fun anythingButChars(chars: String): SuperExpressive {
         return with {
-            val elementValue = Types.anythingButChars(escapeSpecial(chars))
+            val elementValue = Types.anythingButChars(chars.escapeSpecial())
             val currentFrame = getCurrentFrame()
 
             currentFrame.elements.push(applyQuantifier(elementValue))
