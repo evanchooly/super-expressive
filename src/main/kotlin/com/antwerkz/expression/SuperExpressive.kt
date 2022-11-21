@@ -1,5 +1,7 @@
 package com.antwerkz.expression
 
+import com.antwerkz.expression.types.Type
+import com.antwerkz.expression.types.Types
 import java.util.function.Predicate
 import java.util.regex.Pattern
 
@@ -85,8 +87,7 @@ class SuperExpressive() {
                 "oneOrMoreLazy", -> {
                     val inner = evaluate(el.value as Type)
                     val withGroup =
-                        if ((el.value as Type).quantifierRequiresGroup) "(?:${inner})"
-                        else inner
+                        if ((el.value as Type).quantifierRequiresGroup) "(?:${inner})" else inner
                     val symbol = quantifierTable[el.type]
                     return "${withGroup}${symbol}"
                 }
@@ -96,8 +97,7 @@ class SuperExpressive() {
                 "exactly", -> {
                     val inner = evaluate(el.value as Type)
                     val withGroup =
-                        if ((el.value as Type).quantifierRequiresGroup) "(?:${inner})"
-                        else inner
+                        if ((el.value as Type).quantifierRequiresGroup) "(?:${inner})" else inner
                     val func = times[el.type]!!
                     return "${withGroup}${func(el.times)}"
                 }
@@ -364,9 +364,7 @@ class SuperExpressive() {
         return pattern.ifBlank { "(?:)" } to this.state.flags.options
     }
 
-    private fun frameCreatingElement(type: Type) = with {
-        state.stack.add(StackFrame(type))
-    }
+    private fun frameCreatingElement(type: Type) = with { state.stack.add(StackFrame(type)) }
 
     private fun escapeSpecial(s: String): String {
         val specialChars = "\\.^$|?*+()[]{}-".toCharArray().map { it.toString() }
