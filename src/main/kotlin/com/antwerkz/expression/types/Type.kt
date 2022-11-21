@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-open class Type(val type: String, var value: Any? = null, options: Type.() -> Unit = {}) {
+abstract class Type(val type: String, var value: Any? = null) {
     var containsChildren: Boolean = false
     var quantifierRequiresGroup: Boolean = false
     var times: List<Int> = emptyList()
@@ -15,14 +15,22 @@ open class Type(val type: String, var value: Any? = null, options: Type.() -> Un
         this.quantifierRequiresGroup = original.quantifierRequiresGroup
     }
 
-    init {
-        this.options()
-    }
-    fun value(elements: MutableList<Type>): Type {
-        return Type(this).also { it.value = elements }
+    fun copy(original: Type): Type {
+        this.value = original.value
+        this.name = original.name
+        this.index = original.index
+        this.times = original.times
+        this.containsChildren = original.containsChildren
+        this.quantifierRequiresGroup = original.quantifierRequiresGroup
+
+        return this
     }
 
-    open fun copy(): Type {
-        return Type(this)
+    fun value(elements: MutableList<Type>): Type {
+        return copy().also { it.value = elements }
     }
+
+    abstract fun copy(): Type
+
+    abstract fun evaluate(): String
 }

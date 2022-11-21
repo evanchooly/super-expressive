@@ -48,6 +48,7 @@ class SuperExpressive() {
         }
 
         private fun evaluate(el: Type): String {
+            //            return el.evaluate()
             return when (el.type) {
                 "noop" -> ""
                 "anyChar" -> "."
