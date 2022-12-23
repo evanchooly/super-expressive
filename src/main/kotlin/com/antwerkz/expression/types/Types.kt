@@ -3,7 +3,7 @@ package com.antwerkz.expression.types
 import com.antwerkz.expression.types.Root.value
 
 @Suppress("unused")
-class Types {
+internal class Types {
     companion object {
         fun root() = Root
         fun noop() = Noop

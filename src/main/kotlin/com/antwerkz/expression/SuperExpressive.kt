@@ -1,62 +1,18 @@
 package com.antwerkz.expression
 
-import com.antwerkz.expression.types.AnyOfChars
 import com.antwerkz.expression.types.BackReference
 import com.antwerkz.expression.types.Capture
-import com.antwerkz.expression.types.CharType
 import com.antwerkz.expression.types.EndOfInput
 import com.antwerkz.expression.types.NamedBackReference
 import com.antwerkz.expression.types.NamedCapture
-import com.antwerkz.expression.types.RangeType
 import com.antwerkz.expression.types.StartOfInput
 import com.antwerkz.expression.types.Type
 import com.antwerkz.expression.types.Types
-import java.util.function.Predicate
 
-class SuperExpressive() {
+internal class SuperExpressive : RegularExpression {
     private var state = State()
 
-    companion object {
-        operator fun invoke(body: SuperExpressive.() -> Unit): SuperExpressive {
-            val superExpressive = SuperExpressive()
-            superExpressive.body()
-
-            return superExpressive
-        }
-
-        internal fun fuseElements(elements: List<Type>): Pair<String, List<Type>> {
-            val (fusables, rest) = partition(elements)
-            val fused =
-                fusables.joinToString("") { el ->
-                    if (el is CharType || el is AnyOfChars) {
-                        el.value.toString()
-                    } else {
-                        val value = el.value as List<*>
-                        "${value[0]}-${value[1]}"
-                    }
-                }
-            return fused to rest
-        }
-
-        private fun partition(elements: List<Type>): Pair<List<Type>, List<Type>> {
-            val predicate =
-                Predicate<Type> { type ->
-                    type is RangeType || type is CharType || type is AnyOfChars
-                }
-            val fused = mutableListOf<Type>()
-            val rest = mutableListOf<Type>()
-
-            elements.forEach {
-                if (predicate.test(it)) {
-                    fused += it
-                } else {
-                    rest += it
-                }
-            }
-
-            return fused to rest
-        }
-    }
+    internal constructor()
 
     private constructor(expressive: SuperExpressive) : this() {
         state = State(expressive.state)
@@ -83,52 +39,52 @@ class SuperExpressive() {
         getCurrentElementArray().push(applyQuantifier(type))
     }
 
-    fun anyChar() = matchElement(Types.anyChar())
+    override fun anyChar() = matchElement(Types.anyChar())
 
-    fun anyOf(body: SuperExpressive.() -> SuperExpressive) =
+    override fun anyOf(body: RegularExpression.() -> RegularExpression) =
         frameCreatingElement(Types.anyOf(), body)
 
-    fun assertAhead(body: SuperExpressive.() -> SuperExpressive) =
+    override fun assertAhead(body: RegularExpression.() -> RegularExpression) =
         frameCreatingElement(Types.assertAhead(), body)
 
-    fun assertBehind(body: SuperExpressive.() -> SuperExpressive) =
+    override fun assertBehind(body: RegularExpression.() -> RegularExpression) =
         frameCreatingElement(Types.assertBehind(), body)
 
-    fun assertNotAhead(body: SuperExpressive.() -> SuperExpressive) =
+    override fun assertNotAhead(body: RegularExpression.() -> RegularExpression) =
         frameCreatingElement(Types.assertNotAhead(), body)
 
-    fun assertNotBehind(body: SuperExpressive.() -> SuperExpressive) =
+    override fun assertNotBehind(body: RegularExpression.() -> RegularExpression) =
         frameCreatingElement(Types.assertNotBehind(), body)
 
-    fun backreference(index: Int) = matchElement(Types.backreference(index))
+    override fun backreference(index: Int) = matchElement(Types.backreference(index))
 
-    fun capture(body: SuperExpressive.() -> SuperExpressive): SuperExpressive {
-        return with {
-                val newFrame = StackFrame(Types.capture())
-                state.stack.push(newFrame)
-                state.totalCaptureGroups++
-            }
-            .body()
+    override fun capture(body: RegularExpression.() -> RegularExpression): SuperExpressive {
+        return (with {
+                    val newFrame = StackFrame(Types.capture())
+                    state.stack.push(newFrame)
+                    state.totalCaptureGroups++
+                }
+                .body() as SuperExpressive)
             .end()
     }
 
-    fun carriageReturn() = matchElement(Types.carriageReturn())
-    fun ignoreCase() = with { state.flags.ignoreCase() }
-    fun multiLine() = with { state.flags.multiLine() }
-    fun allowComments() = with { state.flags.allowComments() }
-    fun canonicalEquivalance() = with { state.flags.canonicalEquivalance() }
-    fun dotAll() = with { state.flags.dotAll() }
-    fun literal() = with { state.flags.literal() }
-    fun unixLines() = with { state.flags.unixLines() }
+    override fun carriageReturn() = matchElement(Types.carriageReturn())
+    override fun ignoreCase() = with { state.flags.ignoreCase() }
+    override fun multiLine() = with { state.flags.multiLine() }
+    override fun allowComments() = with { state.flags.allowComments() }
+    override fun canonicalEquivalence() = with { state.flags.canonicalEquivalance() }
+    override fun dotAll() = with { state.flags.dotAll() }
+    override fun literal() = with { state.flags.literal() }
+    override fun unixLines() = with { state.flags.unixLines() }
 
-    fun char(c: Char): SuperExpressive {
+    override fun char(c: Char): SuperExpressive {
         return with {
             val currentFrame = getCurrentFrame()
             currentFrame.elements.push(applyQuantifier(Types.char(c.toString().escapeSpecial())))
         }
     }
 
-    fun digit() = matchElement(Types.digit())
+    override fun digit() = matchElement(Types.digit())
 
     private fun end(): SuperExpressive {
         return with {
@@ -142,10 +98,10 @@ class SuperExpressive() {
         }
     }
 
-    fun group(body: SuperExpressive.() -> SuperExpressive) =
+    override fun group(body: RegularExpression.() -> RegularExpression) =
         frameCreatingElement(Types.group(), body)
 
-    fun namedBackreference(name: String): SuperExpressive {
+    override fun namedBackreference(name: String): SuperExpressive {
         if (!this.state.namedGroups.contains(name)) {
             throw IllegalArgumentException(
                 "no capture group called '${name}' exists (create one with .namedCapture())"
@@ -154,13 +110,16 @@ class SuperExpressive() {
         return matchElement(Types.namedBackreference(name))
     }
 
-    fun namedCapture(name: String, body: SuperExpressive.() -> SuperExpressive): SuperExpressive {
-        return with {
-                trackNamedGroup(name)
-                state.stack.push(StackFrame(Types.namedCapture(name)))
-                state.totalCaptureGroups++
-            }
-            .body()
+    override fun namedCapture(
+        name: String,
+        body: RegularExpression.() -> RegularExpression
+    ): SuperExpressive {
+        return (with {
+                    trackNamedGroup(name)
+                    state.stack.push(StackFrame(Types.namedCapture(name)))
+                    state.totalCaptureGroups++
+                }
+                .body() as SuperExpressive)
             .end()
     }
 
@@ -170,24 +129,24 @@ class SuperExpressive() {
         this.state.namedGroups.push(name)
     }
 
-    fun newline() = matchElement(Types.newline())
+    override fun newline() = matchElement(Types.newline())
 
-    fun nonDigit() = matchElement(Types.nonDigit())
+    override fun nonDigit() = matchElement(Types.nonDigit())
 
-    fun nonWhitespaceChar() = matchElement(Types.nonWhitespaceChar())
+    override fun nonWhitespaceChar() = matchElement(Types.nonWhitespaceChar())
 
-    fun nonWord() = matchElement(Types.nonWord())
+    override fun nonWord() = matchElement(Types.nonWord())
 
-    fun nonWordBoundary() = matchElement(Types.nonWordBoundary())
+    override fun nonWordBoundary() = matchElement(Types.nonWordBoundary())
 
     //    fun nullByte() = matchElement(Types.nullByte())
 
-    fun oneOrMore() = quantifierElement(Types.oneOrMore())
-    fun oneOrMoreLazy() = quantifierElement(Types.oneOrMoreLazy())
+    override fun oneOrMore() = quantifierElement(Types.oneOrMore())
+    override fun oneOrMoreLazy() = quantifierElement(Types.oneOrMoreLazy())
 
-    fun optional() = quantifierElement(Types.optional())
+    override fun optional() = quantifierElement(Types.optional())
 
-    fun range(start: Char, end: Char): SuperExpressive {
+    override fun range(start: Char, end: Char): SuperExpressive {
         if (start >= end) {
             throw java.lang.IllegalArgumentException(
                 "start ($start) must be smaller than end (${end})"
@@ -199,21 +158,21 @@ class SuperExpressive() {
 
     //    fun singleLine(): SuperExpressive = TODO("Not yet implemented")
 
-    fun startOfInput(): SuperExpressive {
+    override fun startOfInput(): SuperExpressive {
         return with {
             state.hasDefinedStart = true
             getCurrentElementArray().push(Types.startOfInput())
         }
     }
 
-    fun endOfInput(): SuperExpressive {
+    override fun endOfInput(): SuperExpressive {
         return with {
             state.hasDefinedEnd = true
             getCurrentElementArray().push(Types.endOfInput())
         }
     }
 
-    fun string(s: String): SuperExpressive {
+    override fun string(s: String): SuperExpressive {
         if (s.isEmpty()) {
             throw IllegalArgumentException("s cannot be an empty string")
         }
@@ -226,18 +185,18 @@ class SuperExpressive() {
         }
     }
 
-    fun tab() = matchElement(Types.tab())
+    override fun tab() = matchElement(Types.tab())
 
     fun toRegex(): Regex {
         val (pattern, options) = getRegexPatternAndFlags()
         return Regex(pattern, options)
     }
 
-    fun whitespaceChar() = matchElement(Types.whitespaceChar())
+    override fun whitespaceChar() = matchElement(Types.whitespaceChar())
 
-    fun word() = matchElement(Types.word())
+    override fun word() = matchElement(Types.word())
 
-    fun wordBoundary() = matchElement(Types.wordBoundary())
+    override fun wordBoundary() = matchElement(Types.wordBoundary())
 
     private fun getCurrentElementArray(): MutableList<Type> = getCurrentFrame().elements
 
@@ -251,9 +210,9 @@ class SuperExpressive() {
 
     private fun frameCreatingElement(
         type: Type,
-        body: SuperExpressive.() -> SuperExpressive
+        body: RegularExpression.() -> RegularExpression
     ): SuperExpressive {
-        return with { state.stack.add(StackFrame(type)) }.body().end()
+        return (with { state.stack.add(StackFrame(type)) }.body() as SuperExpressive).end()
     }
 
     private fun String.escapeSpecial(): String {
@@ -268,21 +227,21 @@ class SuperExpressive() {
 
     private fun <E> MutableList<E>.pop(): E = removeLast()
 
-    fun zeroOrMore() = quantifierElement(Types.zeroOrMore())
-    fun zeroOrMoreLazy() = quantifierElement(Types.zeroOrMoreLazy())
+    override fun zeroOrMore() = quantifierElement(Types.zeroOrMore())
+    override fun zeroOrMoreLazy() = quantifierElement(Types.zeroOrMoreLazy())
     private fun quantifierElement(type: Type) = with { getCurrentFrame().quantifier(type) }
 
-    fun exactly(count: Int) = with { getCurrentFrame().quantifier(Types.exactly(count)) }
-    fun atLeast(count: Int) = with { getCurrentFrame().quantifier(Types.atLeast(count)) }
+    override fun exactly(count: Int) = with { getCurrentFrame().quantifier(Types.exactly(count)) }
+    override fun atLeast(count: Int) = with { getCurrentFrame().quantifier(Types.atLeast(count)) }
 
-    fun between(x: Int, y: Int): SuperExpressive {
+    override fun between(x: Int, y: Int): SuperExpressive {
         if (x >= y) {
             throw IllegalArgumentException("x ($x) must be less than y ($y)")
         }
 
         return with { getCurrentFrame().quantifier(Types.between(x, y)) }
     }
-    fun betweenLazy(x: Int, y: Int): SuperExpressive {
+    override fun betweenLazy(x: Int, y: Int): SuperExpressive {
         if (x >= y) {
             throw IllegalArgumentException("x ($x) must be less than y ($y)")
         }
@@ -290,7 +249,7 @@ class SuperExpressive() {
         return with { getCurrentFrame().quantifier(Types.betweenLazy(x, y)) }
     }
 
-    fun anyOfChars(chars: String): SuperExpressive {
+    override fun anyOfChars(chars: String): SuperExpressive {
         return with {
             val elementValue = Types.anyOfChars(chars.escapeSpecial())
             val currentFrame = getCurrentFrame()
@@ -298,7 +257,7 @@ class SuperExpressive() {
             currentFrame.elements.push(applyQuantifier(elementValue))
         }
     }
-    fun anythingButChars(chars: String): SuperExpressive {
+    override fun anythingButChars(chars: String): SuperExpressive {
         return with {
             val elementValue = Types.anythingButChars(chars.escapeSpecial())
             val currentFrame = getCurrentFrame()
@@ -307,7 +266,7 @@ class SuperExpressive() {
         }
     }
 
-    fun anythingButRange(start: Char, end: Char): SuperExpressive {
+    override fun anythingButRange(start: Char, end: Char): SuperExpressive {
         if (start >= end) {
             throw java.lang.IllegalArgumentException(
                 "start ($start) must be smaller than end (${end})"
@@ -405,11 +364,11 @@ class SuperExpressive() {
         return nextEl
     }
 
-    fun subexpression(
-        expr: SuperExpressive,
-        optionsLambda: SubexpressionOptions.() -> Unit = {}
-    ): SuperExpressive {
-        if (expr.state.stack.size != 1) {
+    override fun subexpression(
+        expr: RegularExpression,
+        optionsLambda: SubexpressionOptions.() -> Unit
+    ): RegularExpression {
+        if ((expr as SuperExpressive).state.stack.size != 1) {
             throw java.lang.IllegalArgumentException(
                 "Cannot call subexpression with a not yet fully specified regex object. (Try " +
                     "adding a .end() call to match the \"${getCurrentFrame().type.javaClass.simpleName}\" on the subexpression)"

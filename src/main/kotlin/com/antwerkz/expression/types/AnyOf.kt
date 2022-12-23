@@ -1,8 +1,42 @@
 package com.antwerkz.expression.types
 
-import com.antwerkz.expression.SuperExpressive
+import java.util.function.Predicate
 
 class AnyOf : Type("anyOf") {
+    companion object {
+        private fun fuseElements(elements: List<Type>): Pair<String, List<Type>> {
+            val (fusables, rest) = partition(elements)
+            val fused =
+                fusables.joinToString("") { el ->
+                    if (el is CharType || el is AnyOfChars) {
+                        el.value.toString()
+                    } else {
+                        val value = el.value as List<*>
+                        "${value[0]}-${value[1]}"
+                    }
+                }
+            return fused to rest
+        }
+
+        private fun partition(elements: List<Type>): Pair<List<Type>, List<Type>> {
+            val predicate =
+                Predicate<Type> { type ->
+                    type is RangeType || type is CharType || type is AnyOfChars
+                }
+            val fused = mutableListOf<Type>()
+            val rest = mutableListOf<Type>()
+
+            elements.forEach {
+                if (predicate.test(it)) {
+                    fused += it
+                } else {
+                    rest += it
+                }
+            }
+
+            return fused to rest
+        }
+    }
     init {
         containsChildren = true
     }
@@ -10,7 +44,7 @@ class AnyOf : Type("anyOf") {
     override fun copy() = AnyOf().copy(this)
 
     override fun evaluate(): String {
-        var (fused, rest) = SuperExpressive.fuseElements(value as List<Type>)
+        val (fused, rest) = fuseElements(value as List<Type>)
 
         if (rest.isEmpty()) {
             return "[${fused}]"
