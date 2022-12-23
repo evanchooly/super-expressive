@@ -64,32 +64,38 @@ class SuperExpressiveTest {
 
         testRegexEquality(
             "(?:hello|\\d|\\w|[\\.#])",
-            SuperExpressive().anyOf().string("hello").digit().word().char('.').char('#').end()
+            SuperExpressive().anyOf {
+                string("hello")
+                    .digit()
+                    .word()
+                    .char('.')
+                    .char('#')
+            }
         )
 
         testRegexEquality(
             "[a-zA-Z0-9\\.#]",
             SuperExpressive()
-                .anyOf()
-                .range('a', 'z')
-                .range('A', 'Z')
-                .range('0', '9')
-                .char('.')
-                .char('#')
-                .end()
+                .anyOf {
+                    range('a', 'z')
+                        .range('A', 'Z')
+                        .range('0', '9')
+                        .char('.')
+                        .char('#')
+                }
         )
 
         testRegexEquality(
             "(?:XXX|[a-zA-Z0-9\\.#])",
             SuperExpressive()
-                .anyOf()
-                .range('a', 'z')
-                .range('A', 'Z')
-                .range('0', '9')
-                .char('.')
-                .char('#')
-                .string("XXX")
-                .end()
+                .anyOf {
+                    range('a', 'z')
+                    .range('A', 'Z')
+                    .range('0', '9')
+                    .char('.')
+                    .char('#')
+                    .string("XXX")
+                }
         )
 
         testRegexEquality(
@@ -146,7 +152,7 @@ class SuperExpressiveTest {
 
         testRegexEquality(
             "(?:hello \\w!)",
-            SuperExpressive().group().string("hello ").word().char('!').end()
+            SuperExpressive().group { string("hello ").word().char('!') }
         )
 
         testErrorCondition(
@@ -157,22 +163,22 @@ class SuperExpressiveTest {
 
         testRegexEquality(
             "(?=[a-f])[a-z]",
-            SuperExpressive().assertAhead().range('a', 'f').end().range('a', 'z')
+            SuperExpressive().assertAhead{range('a', 'f') }.range('a', 'z')
         )
 
         testRegexEquality(
             "(?<=hello )[a-z]",
-            SuperExpressive().assertBehind().string("hello ").end().range('a', 'z')
+            SuperExpressive().assertBehind { string("hello ") }.range('a', 'z')
         )
 
         testRegexEquality(
             "(?![a-f])[0-9]",
-            SuperExpressive().assertNotAhead().range('a', 'f').end().range('0', '9')
+            SuperExpressive().assertNotAhead { range('a', 'f') }.range('0', '9')
         )
 
         testRegexEquality(
             "(?<!hello )[a-z]",
-            SuperExpressive().assertNotBehind().string("hello ").end().range('a', 'z')
+            SuperExpressive().assertNotBehind { string("hello ")}.range('a', 'z')
         )
 
         testRegexEquality("\\w?", SuperExpressive().optional().word())
@@ -409,5 +415,8 @@ class SuperExpressiveTest {
     ) {
         testRegexEqualityOnly(expected, superExpression)
         assertEquals(superExpression.toRegex().options, flags)
+
+        // execute the regex to validate the structure
+        superExpression.toRegex().find("dummy string")
     }
 }

@@ -85,15 +85,15 @@ class SuperExpressive() {
 
     fun anyChar() = matchElement(Types.anyChar())
 
-    fun anyOf() = frameCreatingElement(Types.anyOf())
+    fun anyOf(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.anyOf(), body)
 
-    fun assertAhead() = frameCreatingElement(Types.assertAhead())
+    fun assertAhead(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.assertAhead(), body)
 
-    fun assertBehind() = frameCreatingElement(Types.assertBehind())
+    fun assertBehind(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.assertBehind(), body)
 
-    fun assertNotAhead() = frameCreatingElement(Types.assertNotAhead())
+    fun assertNotAhead(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.assertNotAhead(), body)
 
-    fun assertNotBehind() = frameCreatingElement(Types.assertNotBehind())
+    fun assertNotBehind(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.assertNotBehind(), body)
 
     fun backreference(index: Int) = matchElement(Types.backreference(index))
 
@@ -123,6 +123,7 @@ class SuperExpressive() {
 
     fun digit() = matchElement(Types.digit())
 
+    @Deprecated(message = "making this private")
     fun end(): SuperExpressive {
         return with {
             val oldFrame = state.stack.pop()
@@ -135,7 +136,7 @@ class SuperExpressive() {
         }
     }
 
-    fun group() = frameCreatingElement(Types.group())
+    fun group(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.group(), body)
 
     fun namedBackreference(name: String): SuperExpressive {
         if (!this.state.namedGroups.contains(name)) {
@@ -239,7 +240,13 @@ class SuperExpressive() {
         return pattern.ifBlank { "(?:)" } to this.state.flags.options
     }
 
-    private fun frameCreatingElement(type: Type) = with { state.stack.add(StackFrame(type)) }
+    private fun frameCreatingElement(type: Type, body: SuperExpressive.() -> SuperExpressive): SuperExpressive {
+        return with {
+            state.stack.add(StackFrame(type))
+        }
+            .body()
+            .end()
+    }
 
     private fun String.escapeSpecial(): String {
         val specialChars = "\\.^$|?*+()[]{}-".toCharArray().map { it.toString() }
