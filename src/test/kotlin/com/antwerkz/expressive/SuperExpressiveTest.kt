@@ -1,3 +1,5 @@
+package com.antwerkz.expressive
+
 import com.antwerkz.expression.SuperExpressive
 import org.testng.Assert.assertEquals
 import org.testng.Assert.fail
@@ -22,13 +24,10 @@ class SuperExpressiveTest {
             SuperExpressive().startOfInput().string("hello").anyChar().string("world").endOfInput()
         val namedCaptureSubExpression =
             SuperExpressive()
-                .namedCapture("module")
-                .exactly(2)
-                .anyChar()
-                .end()
+                .namedCapture("module") { exactly(2).anyChar() }
                 .namedBackreference("module")
         val indexedBackreferenceSubexpression =
-            SuperExpressive().capture().exactly(2).anyChar().end().backreference(1)
+            SuperExpressive().capture { exactly(2).anyChar() }.backreference(1)
     }
 
     private fun testErrorCondition(errorMsg: String, function: () -> SuperExpressive) {
@@ -64,78 +63,49 @@ class SuperExpressiveTest {
 
         testRegexEquality(
             "(?:hello|\\d|\\w|[\\.#])",
-            SuperExpressive().anyOf {
-                string("hello")
-                    .digit()
-                    .word()
-                    .char('.')
-                    .char('#')
-            }
+            SuperExpressive().anyOf { string("hello").digit().word().char('.').char('#') }
         )
 
         testRegexEquality(
             "[a-zA-Z0-9\\.#]",
-            SuperExpressive()
-                .anyOf {
-                    range('a', 'z')
-                        .range('A', 'Z')
-                        .range('0', '9')
-                        .char('.')
-                        .char('#')
-                }
+            SuperExpressive().anyOf {
+                range('a', 'z').range('A', 'Z').range('0', '9').char('.').char('#')
+            }
         )
 
         testRegexEquality(
             "(?:XXX|[a-zA-Z0-9\\.#])",
-            SuperExpressive()
-                .anyOf {
-                    range('a', 'z')
-                    .range('A', 'Z')
-                    .range('0', '9')
-                    .char('.')
-                    .char('#')
-                    .string("XXX")
-                }
+            SuperExpressive().anyOf {
+                range('a', 'z').range('A', 'Z').range('0', '9').char('.').char('#').string("XXX")
+            }
         )
 
         testRegexEquality(
             "(hello \\w!)",
-            SuperExpressive().capture().string("hello ").word().char('!').end()
+            SuperExpressive().capture { string("hello ").word().char('!') }
         )
 
         testRegexEquality(
             "(?<ThisIsTheName>hello \\w!)",
-            SuperExpressive().namedCapture("ThisIsTheName").string("hello ").word().char('!').end()
+            SuperExpressive().namedCapture("ThisIsTheName") { string("hello ").word().char('!') }
         )
 
         testErrorCondition(
             "name 'hello world' is not valid (only letters, numbers, and underscores)"
         ) {
-            SuperExpressive().namedCapture("hello world").string("hello ").word().char('!').end()
+            SuperExpressive().namedCapture("hello world") { string("hello ").word().char('!') }
         }
 
         testErrorCondition("cannot use hello again for a capture group") {
             SuperExpressive()
-                .namedCapture("hello")
-                .string("hello ")
-                .word()
-                .char('!')
-                .end()
-                .namedCapture("hello")
-                .string("hello ")
-                .word()
-                .char('!')
-                .end()
+                .namedCapture("hello") { string("hello ").word().char('!') }
+                .namedCapture("hello") { string("hello ").word().char('!') }
         }
 
         testRegexEquality(
             "(?<backRef>hello \\w!)\\k<backRef>",
             SuperExpressive()
-                .namedCapture("backRef")
-                .string("hello ")
-                .word()
-                .char('!')
-                .end()
+                .namedCapture("backRef") { string("hello ").word().char('!') }
                 .namedBackreference("backRef")
         )
 
@@ -147,7 +117,7 @@ class SuperExpressiveTest {
 
         testRegexEquality(
             "(hello \\w!)\\1",
-            SuperExpressive().capture().string("hello ").word().char('!').end().backreference(1)
+            SuperExpressive().capture { string("hello ").word().char('!') }.backreference(1)
         )
 
         testRegexEquality(
@@ -155,15 +125,9 @@ class SuperExpressiveTest {
             SuperExpressive().group { string("hello ").word().char('!') }
         )
 
-        testErrorCondition(
-            "Cannot call end while building the root expression",
-        ) {
-            SuperExpressive().end()
-        }
-
         testRegexEquality(
             "(?=[a-f])[a-z]",
-            SuperExpressive().assertAhead{range('a', 'f') }.range('a', 'z')
+            SuperExpressive().assertAhead { range('a', 'f') }.range('a', 'z')
         )
 
         testRegexEquality(
@@ -178,7 +142,7 @@ class SuperExpressiveTest {
 
         testRegexEquality(
             "(?<!hello )[a-z]",
-            SuperExpressive().assertNotBehind { string("hello ")}.range('a', 'z')
+            SuperExpressive().assertNotBehind { string("hello ") }.range('a', 'z')
         )
 
         testRegexEquality("\\w?", SuperExpressive().optional().word())
@@ -224,19 +188,15 @@ class SuperExpressiveTest {
         val firstLayerSubexpression =
             SuperExpressive()
                 .string("outer begin")
-                .namedCapture("innerSubExpression")
-                .optional()
-                .subexpression(nestedSubexpression)
-                .end()
+                .namedCapture("innerSubExpression") {
+                    optional().subexpression(nestedSubexpression)
+                }
                 .string("outer end")
 
         testRegexEquality(
             "(\\d{3,})outer begin(?<innerSubExpression>(?:.{2})?)outer end\\1[0-9]",
             SuperExpressive()
-                .capture()
-                .atLeast(3)
-                .digit()
-                .end()
+                .capture { atLeast(3).digit() }
                 .subexpression(firstLayerSubexpression)
                 .backreference(1)
                 .range('0', '9')
@@ -248,10 +208,7 @@ class SuperExpressiveTest {
         testRegexEquality(
             "(\\d{3,})(.{2})\\2\\1[0-9]",
             SuperExpressive()
-                .capture()
-                .atLeast(3)
-                .digit()
-                .end()
+                .capture { atLeast(3).digit() }
                 .subexpression(indexedBackreferenceSubexpression)
                 .backreference(1)
                 .range('0', '9')
@@ -262,10 +219,7 @@ class SuperExpressiveTest {
     fun groupNameCollisionWithNamespace() {
         testErrorCondition("cannot use yolomodule again for a capture group") {
             SuperExpressive()
-                .namedCapture("yolomodule")
-                .atLeast(3)
-                .digit()
-                .end()
+                .namedCapture("yolomodule") { atLeast(3).digit() }
                 .subexpression(namedCaptureSubExpression) { namespace = "yolo" }
                 .range('0', '9')
         }
@@ -275,10 +229,7 @@ class SuperExpressiveTest {
     fun groupNameCollisionNoNamespace() {
         testErrorCondition("cannot use module again for a capture group") {
             SuperExpressive()
-                .namedCapture("module")
-                .atLeast(3)
-                .digit()
-                .end()
+                .namedCapture("module") { atLeast(3).digit() }
                 .subexpression(namedCaptureSubExpression)
                 .range('0', '9')
         }

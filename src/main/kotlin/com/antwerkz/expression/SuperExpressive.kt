@@ -85,24 +85,31 @@ class SuperExpressive() {
 
     fun anyChar() = matchElement(Types.anyChar())
 
-    fun anyOf(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.anyOf(), body)
+    fun anyOf(body: SuperExpressive.() -> SuperExpressive) =
+        frameCreatingElement(Types.anyOf(), body)
 
-    fun assertAhead(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.assertAhead(), body)
+    fun assertAhead(body: SuperExpressive.() -> SuperExpressive) =
+        frameCreatingElement(Types.assertAhead(), body)
 
-    fun assertBehind(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.assertBehind(), body)
+    fun assertBehind(body: SuperExpressive.() -> SuperExpressive) =
+        frameCreatingElement(Types.assertBehind(), body)
 
-    fun assertNotAhead(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.assertNotAhead(), body)
+    fun assertNotAhead(body: SuperExpressive.() -> SuperExpressive) =
+        frameCreatingElement(Types.assertNotAhead(), body)
 
-    fun assertNotBehind(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.assertNotBehind(), body)
+    fun assertNotBehind(body: SuperExpressive.() -> SuperExpressive) =
+        frameCreatingElement(Types.assertNotBehind(), body)
 
     fun backreference(index: Int) = matchElement(Types.backreference(index))
 
-    fun capture(): SuperExpressive {
+    fun capture(body: SuperExpressive.() -> SuperExpressive): SuperExpressive {
         return with {
-            val newFrame = StackFrame(Types.capture())
-            state.stack.push(newFrame)
-            state.totalCaptureGroups++
-        }
+                val newFrame = StackFrame(Types.capture())
+                state.stack.push(newFrame)
+                state.totalCaptureGroups++
+            }
+            .body()
+            .end()
     }
 
     fun carriageReturn() = matchElement(Types.carriageReturn())
@@ -123,8 +130,7 @@ class SuperExpressive() {
 
     fun digit() = matchElement(Types.digit())
 
-    @Deprecated(message = "making this private")
-    fun end(): SuperExpressive {
+    private fun end(): SuperExpressive {
         return with {
             val oldFrame = state.stack.pop()
             if (state.stack.isEmpty()) {
@@ -136,7 +142,8 @@ class SuperExpressive() {
         }
     }
 
-    fun group(body: SuperExpressive.() -> SuperExpressive) = frameCreatingElement(Types.group(), body)
+    fun group(body: SuperExpressive.() -> SuperExpressive) =
+        frameCreatingElement(Types.group(), body)
 
     fun namedBackreference(name: String): SuperExpressive {
         if (!this.state.namedGroups.contains(name)) {
@@ -147,12 +154,14 @@ class SuperExpressive() {
         return matchElement(Types.namedBackreference(name))
     }
 
-    fun namedCapture(name: String): SuperExpressive {
+    fun namedCapture(name: String, body: SuperExpressive.() -> SuperExpressive): SuperExpressive {
         return with {
-            trackNamedGroup(name)
-            state.stack.push(StackFrame(Types.namedCapture(name)))
-            state.totalCaptureGroups++
-        }
+                trackNamedGroup(name)
+                state.stack.push(StackFrame(Types.namedCapture(name)))
+                state.totalCaptureGroups++
+            }
+            .body()
+            .end()
     }
 
     private fun trackNamedGroup(name: String) {
@@ -240,12 +249,11 @@ class SuperExpressive() {
         return pattern.ifBlank { "(?:)" } to this.state.flags.options
     }
 
-    private fun frameCreatingElement(type: Type, body: SuperExpressive.() -> SuperExpressive): SuperExpressive {
-        return with {
-            state.stack.add(StackFrame(type))
-        }
-            .body()
-            .end()
+    private fun frameCreatingElement(
+        type: Type,
+        body: SuperExpressive.() -> SuperExpressive
+    ): SuperExpressive {
+        return with { state.stack.add(StackFrame(type)) }.body().end()
     }
 
     private fun String.escapeSpecial(): String {
