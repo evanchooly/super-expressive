@@ -10,7 +10,7 @@
         <version>9</version>
     </parent>
 
-    <groupId>com.antwerkz</groupId>
+    <groupId>com.antwerkz.super-expressive</groupId>
     <artifactId>super-expressive</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
