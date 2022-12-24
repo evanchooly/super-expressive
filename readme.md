@@ -39,9 +39,9 @@ SuperExpressive turns those complex and unwieldy regexes that appear in code rev
 
 ```xml
 <dependency>
-    <groupId>*coming soon*</groupId>
-    <artifactId>*coming soon*</artifactId>
-    <version>*coming soon*</version>
+    <groupId>com.antwerkz.super-expressive</groupId>
+    <artifactId>super-expressive</artifactId>
+    <version>0.1.0</version>
 </dependency>
 ```
 
