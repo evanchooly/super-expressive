@@ -21,7 +21,12 @@ That's where **Super Expressive** comes in. It provides a programmatic and human
 - properties and methods describe what they do in plain English
 - e.g., rather than writing this regex:  `(?:hello|\\d|\\w|[\\.#])`, now you write it like this;
 ```kotlin
-  anyOf { string("hello").digit().word().char('.').char('#') }
+  anyOf { string("hello")
+      .digit()
+      .word()
+      .char('.')
+      .char('#')
+  }
 ```
 - order matters! quantifiers are specified before the thing they change, just like in English (e.g. `val regex = exactly(5).digit`)
 - if you make a mistake, you'll know how to fix it. SuperExpressive will guide you towards a fix if your expression is invalid
