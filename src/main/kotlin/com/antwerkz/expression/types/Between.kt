@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class Between(private val x: Int, private val y: Int) : Quantified("between") {
+internal class Between(private val x: Int, private val y: Int) : Quantified("between") {
     init {
         times = listOf(x, y)
     }

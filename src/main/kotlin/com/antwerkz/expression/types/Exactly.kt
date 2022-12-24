@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class Exactly(count: Int) : Quantified("exactly") {
+internal class Exactly(count: Int) : Quantified("exactly") {
     init {
         times = listOf(count)
     }

@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-abstract class Type(var value: Any? = null) {
+internal abstract class Type(var value: Any? = null) {
     var containsChildren: Boolean = false
     var quantifierRequiresGroup: Boolean = false
     var times: List<Int> = emptyList()

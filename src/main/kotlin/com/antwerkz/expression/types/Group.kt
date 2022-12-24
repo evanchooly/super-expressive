@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class Group : Type("group") {
+internal class Group : Type("group") {
     init {
         containsChildren = true
     }

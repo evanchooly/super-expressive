@@ -2,7 +2,7 @@ package com.antwerkz.expression
 
 import com.antwerkz.expression.types.Types
 
-class State() {
+internal class State() {
 
     var hasDefinedStart: Boolean = false
     var hasDefinedEnd: Boolean = false

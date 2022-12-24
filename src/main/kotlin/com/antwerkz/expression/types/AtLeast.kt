@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class AtLeast(count: Int) : Quantified("atLeast") {
+internal class AtLeast(count: Int) : Quantified("atLeast") {
     init {
         times = listOf(count)
     }

@@ -8,6 +8,7 @@ import com.antwerkz.expression.types.NamedCapture
 import com.antwerkz.expression.types.StartOfInput
 import com.antwerkz.expression.types.Type
 import com.antwerkz.expression.types.Types
+import java.util.regex.Pattern
 
 internal class SuperExpressive : RegularExpression {
     private var state = State()
@@ -187,9 +188,14 @@ internal class SuperExpressive : RegularExpression {
 
     override fun tab() = matchElement(Types.tab())
 
-    fun toRegex(): Regex {
+    internal fun toRegex(): Regex {
         val (pattern, options) = getRegexPatternAndFlags()
         return Regex(pattern, options)
+    }
+
+    internal fun toPattern(): Pattern {
+        val (pattern, options) = getRegexPatternAndFlags()
+        return Pattern.compile(pattern, options.fold(1) { acc, option -> acc or option.value })
     }
 
     override fun whitespaceChar() = matchElement(Types.whitespaceChar())

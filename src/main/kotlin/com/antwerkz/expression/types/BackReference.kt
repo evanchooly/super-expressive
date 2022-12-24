@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class BackReference(private val refIndex: Int) : Type("backreference") {
+internal class BackReference(private val refIndex: Int) : Type("backreference") {
     init {
         index = refIndex
     }

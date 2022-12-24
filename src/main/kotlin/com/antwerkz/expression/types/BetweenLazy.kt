@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class BetweenLazy(private val x: Int, private val y: Int) : Quantified("betweenLazy") {
+internal class BetweenLazy(private val x: Int, private val y: Int) : Quantified("betweenLazy") {
     init {
         times = listOf(x, y)
     }

@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-abstract class Quantified(type: String) : Type(type) {
+internal abstract class Quantified(type: String) : Type(type) {
     init {
         containsChildren = true
     }

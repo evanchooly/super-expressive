@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-abstract class Qualified : Type() {
+internal abstract class Qualified : Type() {
     init {
         containsChildren = true
     }

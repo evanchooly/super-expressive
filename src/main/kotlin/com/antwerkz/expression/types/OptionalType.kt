@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class OptionalType : Qualified() {
+internal class OptionalType : Qualified() {
     override fun copy() = OptionalType().copy(this)
 
     override fun evaluate(): String {

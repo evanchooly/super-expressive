@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class Capture : Type("capture") {
+internal class Capture : Type("capture") {
     init {
         containsChildren = true
     }

@@ -2,7 +2,7 @@ package com.antwerkz.expression
 
 import com.antwerkz.expression.types.Type
 
-data class StackFrame(
+internal data class StackFrame(
     val type: Type,
     var quantifier: Type? = null,
     var elements: MutableList<Type> = mutableListOf()

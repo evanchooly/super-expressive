@@ -2,7 +2,7 @@ package com.antwerkz.expression.types
 
 import java.util.function.Predicate
 
-class AnyOf : Type("anyOf") {
+internal class AnyOf : Type("anyOf") {
     companion object {
         private fun fuseElements(elements: List<Type>): Pair<String, List<Type>> {
             val (fusables, rest) = partition(elements)

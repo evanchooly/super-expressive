@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class AssertNotAhead : Type("assertNotAhead") {
+internal class AssertNotAhead : Type("assertNotAhead") {
     init {
         containsChildren = true
     }

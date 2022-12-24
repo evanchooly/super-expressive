@@ -8,7 +8,7 @@ import kotlin.text.RegexOption.LITERAL
 import kotlin.text.RegexOption.MULTILINE
 import kotlin.text.RegexOption.UNIX_LINES
 
-data class Flags(val options: MutableSet<RegexOption> = mutableSetOf()) {
+internal data class Flags(val options: MutableSet<RegexOption> = mutableSetOf()) {
     fun ignoreCase() {
         options += IGNORE_CASE
     }

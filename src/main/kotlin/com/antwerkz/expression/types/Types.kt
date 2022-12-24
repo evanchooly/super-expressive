@@ -23,7 +23,6 @@ internal class Types {
         fun tab() = Tab
         fun nullByte() = NullByte
         fun anyOfChars(chars: String) = AnyOfChars(chars)
-        fun anythingButString() = AnythingButString()
         fun anythingButChars(chars: String) = AnythingButChars(chars)
         fun anythingButRange(start: Char, end: Char) = AnythingButRange(start, end)
         fun char(value: String) = CharType(value)

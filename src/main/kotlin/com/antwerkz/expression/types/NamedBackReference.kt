@@ -1,6 +1,6 @@
 package com.antwerkz.expression.types
 
-class NamedBackReference(private val backReference: String) : Type("namedBackreference") {
+internal class NamedBackReference(private val backReference: String) : Type("namedBackreference") {
     init {
         name = backReference
     }
