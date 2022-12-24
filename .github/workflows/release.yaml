@@ -1,22 +1,12 @@
-name: Build Project
+name: Release
 
 on:
   push:
-  workflow_dispatch:
+    tags:
+      - r[0-9]*
 
 jobs:
-  Build:
-    strategy:
-      matrix:
-        java: [ 11, 19 ]
-    uses: evanchooly/workflows/.github/workflows/build.yml@master
-    with:
-      java: ${{ matrix.java }}
-
-  Snapshots:
-    if: github.ref_type == 'branch'
-    needs:
-      - Build
+  release:
     uses: evanchooly/workflows/.github/workflows/release.yml@master
     secrets:
       SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
