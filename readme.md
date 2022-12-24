@@ -21,7 +21,8 @@ That's where **Super Expressive** comes in. It provides a programmatic and human
 - properties and methods describe what they do in plain English
 - e.g., rather than writing this regex:  `(?:hello|\\d|\\w|[\\.#])`, now you write it like this;
 ```kotlin
-  anyOf { string("hello")
+  anyOf { 
+    string("hello")
       .digit()
       .word()
       .char('.')
