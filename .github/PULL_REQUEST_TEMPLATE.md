@@ -15,8 +15,6 @@ intentions then feel free to leave elaboration comments below!
     - Please note the related issue below, and how this PR relates to the issue if appropriate
   - [ ] Does the code style reasonably match the existing code?
   - [ ] Are the changes tested (using the existing format, as far as is possible?)
-  - [ ] Are the changes documented in the readme with a suitable example?
-  - [ ] Is the table of contents updated?
-  - [ ] Is the `index.d.ts` file updated, using appropriate types and using the same description as the readme?
+  
 - [ ] This PR introduces some other kind of change
   - Please explain the change below
