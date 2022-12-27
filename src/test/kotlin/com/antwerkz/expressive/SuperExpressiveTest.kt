@@ -65,9 +65,9 @@ class SuperExpressiveTest {
         internal val startEndSubExpression =
             startOfInput().string("hello").anyChar().string("world").endOfInput()
         internal val namedCaptureSubExpression =
-            namedCapture("module") { exactly(2).anyChar() }.namedBackreference("module")
+            namedCapture("module") { exactly(2) { anyChar() } }.namedBackreference("module")
         internal val indexedBackreferenceSubexpression =
-            capture { exactly(2).anyChar() }.backreference(1)
+            capture { exactly(2) { anyChar() } }.backreference(1)
     }
 
     private fun testErrorCondition(errorMsg: String, function: () -> RegularExpression) {
@@ -169,7 +169,7 @@ class SuperExpressiveTest {
         testRegexEquality("\\w*?", zeroOrMoreLazy().word())
         testRegexEquality("\\w+", oneOrMore().word())
         testRegexEquality("\\w+?", oneOrMoreLazy().word())
-        testRegexEquality("\\w{4}", exactly(4).word())
+        testRegexEquality("\\w{4}", exactly(4) { word() })
         testRegexEquality("\\w{4,}", atLeast(4).word())
         testRegexEquality("\\w{4,7}", between(4, 7).word())
         testRegexEquality("\\w{4,7}?", betweenLazy(4, 7).word())
@@ -203,7 +203,7 @@ class SuperExpressiveTest {
 
     @Test
     fun deeplyNestedSubexpressions() {
-        val nestedSubexpression = exactly(2).anyChar()
+        val nestedSubexpression = exactly(2) { anyChar() }
         val firstLayerSubexpression =
             SuperExpressive()
                 .string("outer begin")

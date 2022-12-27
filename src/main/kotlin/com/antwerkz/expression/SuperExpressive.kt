@@ -237,7 +237,8 @@ internal class SuperExpressive : RegularExpression {
     override fun zeroOrMoreLazy() = quantifierElement(Types.zeroOrMoreLazy())
     private fun quantifierElement(type: Type) = with { getCurrentFrame().quantifier(type) }
 
-    override fun exactly(count: Int) = with { getCurrentFrame().quantifier(Types.exactly(count)) }
+    override fun exactly(count: Int, expression: RegularExpression.() -> RegularExpression) =
+        with { getCurrentFrame().quantifier(Types.exactly(count)) }.expression()
     override fun atLeast(count: Int) = with { getCurrentFrame().quantifier(Types.atLeast(count)) }
 
     override fun between(x: Int, y: Int): SuperExpressive {

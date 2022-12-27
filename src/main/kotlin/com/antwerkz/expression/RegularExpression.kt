@@ -198,8 +198,11 @@ interface RegularExpression {
             return SuperExpressive().zeroOrMoreLazy()
         }
 
-        override fun exactly(count: Int): RegularExpression {
-            return SuperExpressive().exactly(count)
+        override fun exactly(
+            count: Int,
+            expression: RegularExpression.() -> RegularExpression
+        ): RegularExpression {
+            return SuperExpressive().exactly(count, expression)
         }
 
         override fun atLeast(count: Int): RegularExpression {
@@ -726,7 +729,10 @@ interface RegularExpression {
      * // yields:  "\d{5}"
      * ```
      */
-    fun exactly(count: Int): RegularExpression
+    fun exactly(
+        count: Int,
+        expression: RegularExpression.() -> RegularExpression
+    ): RegularExpression
 
     /**
      * Assert that the proceeding element will be matched at least `n` times.
