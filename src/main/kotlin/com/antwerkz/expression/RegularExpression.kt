@@ -205,16 +205,27 @@ interface RegularExpression {
             return SuperExpressive().exactly(count, expression)
         }
 
-        override fun atLeast(count: Int): RegularExpression {
-            return SuperExpressive().atLeast(count)
+        override fun atLeast(
+            count: Int,
+            expression: RegularExpression.() -> RegularExpression
+        ): RegularExpression {
+            return SuperExpressive().atLeast(count, expression)
         }
 
-        override fun between(x: Int, y: Int): RegularExpression {
-            return SuperExpressive().between(x, y)
+        override fun between(
+            x: Int,
+            y: Int,
+            expression: RegularExpression.() -> RegularExpression
+        ): RegularExpression {
+            return SuperExpressive().between(x, y, expression)
         }
 
-        override fun betweenLazy(x: Int, y: Int): RegularExpression {
-            return SuperExpressive().betweenLazy(x, y)
+        override fun betweenLazy(
+            x: Int,
+            y: Int,
+            expression: RegularExpression.() -> RegularExpression
+        ): RegularExpression {
+            return SuperExpressive().betweenLazy(x, y, expression)
         }
 
         override fun anyOfChars(chars: String): RegularExpression {
@@ -744,7 +755,10 @@ interface RegularExpression {
      * // yields:  "\d{5,}"
      * ```
      */
-    fun atLeast(count: Int): RegularExpression
+    fun atLeast(
+        count: Int,
+        expression: RegularExpression.() -> RegularExpression
+    ): RegularExpression
 
     /**
      * Assert that the proceeding element will be matched somewhere between `x` and `y` times.
@@ -756,7 +770,11 @@ interface RegularExpression {
      * // yields:  "\d{3,5}"
      * ```
      */
-    fun between(x: Int, y: Int): RegularExpression
+    fun between(
+        x: Int,
+        y: Int,
+        expression: RegularExpression.() -> RegularExpression
+    ): RegularExpression
 
     /**
      * Assert that the proceeding element will be matched somewhere between `x` and `y` times, but
@@ -769,7 +787,11 @@ interface RegularExpression {
      * // yields:  "\d{3,5}?"
      * ```
      */
-    fun betweenLazy(x: Int, y: Int): RegularExpression
+    fun betweenLazy(
+        x: Int,
+        y: Int,
+        expression: RegularExpression.() -> RegularExpression
+    ): RegularExpression
 
     /**
      * Matches any of the characters in the provided string `chars`.

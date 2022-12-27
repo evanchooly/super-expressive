@@ -170,9 +170,9 @@ class SuperExpressiveTest {
         testRegexEquality("\\w+", oneOrMore().word())
         testRegexEquality("\\w+?", oneOrMoreLazy().word())
         testRegexEquality("\\w{4}", exactly(4) { word() })
-        testRegexEquality("\\w{4,}", atLeast(4).word())
-        testRegexEquality("\\w{4,7}", between(4, 7).word())
-        testRegexEquality("\\w{4,7}?", betweenLazy(4, 7).word())
+        testRegexEquality("\\w{4,}", atLeast(4) { word() })
+        testRegexEquality("\\w{4,7}", between(4, 7) { word() })
+        testRegexEquality("\\w{4,7}?", betweenLazy(4, 7) { word() })
 
         testRegexEquality("^", startOfInput())
         testRegexEquality("$", endOfInput())
@@ -193,8 +193,7 @@ class SuperExpressiveTest {
             "^\\d{3,}hello.world[0-9]$",
             SuperExpressive()
                 .startOfInput()
-                .atLeast(3)
-                .digit()
+                .atLeast(3) { digit() }
                 .subexpression(simpleSubExpression)
                 .range('0', '9')
                 .endOfInput()
@@ -215,7 +214,7 @@ class SuperExpressiveTest {
         testRegexEquality(
             "(\\d{3,})outer begin(?<innerSubExpression>(?:.{2})?)outer end\\1[0-9]",
             SuperExpressive()
-                .capture { atLeast(3).digit() }
+                .capture { atLeast(3) { digit() } }
                 .subexpression(firstLayerSubexpression)
                 .backreference(1)
                 .range('0', '9')
@@ -227,7 +226,7 @@ class SuperExpressiveTest {
         testRegexEquality(
             "(\\d{3,})(.{2})\\2\\1[0-9]",
             SuperExpressive()
-                .capture { atLeast(3).digit() }
+                .capture { atLeast(3) { digit() } }
                 .subexpression(indexedBackreferenceSubexpression)
                 .backreference(1)
                 .range('0', '9')
@@ -239,7 +238,7 @@ class SuperExpressiveTest {
     fun groupNameCollisionWithNamespace() {
         testErrorCondition("cannot use yolomodule again for a capture group") {
             SuperExpressive()
-                .namedCapture("yolomodule") { atLeast(3).digit() }
+                .namedCapture("yolomodule") { atLeast(3) { digit() } }
                 .subexpression(namedCaptureSubExpression) { namespace = "yolo" }
                 .range('0', '9')
         }
@@ -249,7 +248,7 @@ class SuperExpressiveTest {
     fun groupNameCollisionNoNamespace() {
         testErrorCondition("cannot use module again for a capture group") {
             SuperExpressive()
-                .namedCapture("module") { atLeast(3).digit() }
+                .namedCapture("module") { atLeast(3) { digit() } }
                 .subexpression(namedCaptureSubExpression)
                 .range('0', '9')
         }
@@ -261,8 +260,7 @@ class SuperExpressiveTest {
         testRegexEquality(
             "\\d{3,}(?<yolomodule>.{2})\\k<yolomodule>[0-9]",
             SuperExpressive()
-                .atLeast(3)
-                .digit()
+                .atLeast(3) { digit() }
                 .subexpression(namedCaptureSubExpression) { namespace = "yolo" }
                 .range('0', '9')
         )
@@ -273,8 +271,7 @@ class SuperExpressiveTest {
         testRegexEquality(
             "\\d{3,}(?<module>.{2})\\k<module>[0-9]",
             SuperExpressive()
-                .atLeast(3)
-                .digit()
+                .atLeast(3) { digit() }
                 .subexpression(namedCaptureSubExpression)
                 .range('0', '9')
         )
@@ -296,8 +293,7 @@ class SuperExpressiveTest {
         ) {
             SuperExpressive()
                 .startOfInput()
-                .atLeast(3)
-                .digit()
+                .atLeast(3) { digit() }
                 .subexpression(startEndSubExpression) { ignoreStartAndEnd = false }
                 .range('0', '9')
         }
@@ -308,8 +304,7 @@ class SuperExpressiveTest {
         testRegexEquality(
             "\\d{3,}hello.world[0-9]",
             SuperExpressive()
-                .atLeast(3)
-                .digit()
+                .atLeast(3) { digit() }
                 .subexpression(startEndSubExpression)
                 .range('0', '9'),
             setOf()
@@ -321,8 +316,7 @@ class SuperExpressiveTest {
         testRegexEquality(
             "\\d{3,}^hello.world$[0-9]",
             SuperExpressive()
-                .atLeast(3)
-                .digit()
+                .atLeast(3) { digit() }
                 .subexpression(startEndSubExpression) { ignoreStartAndEnd = false }
                 .range('0', '9')
         )
@@ -334,8 +328,7 @@ class SuperExpressiveTest {
             "^\\d{3,}hello.world[0-9]$",
             SuperExpressive()
                 .startOfInput()
-                .atLeast(3)
-                .digit()
+                .atLeast(3) { digit() }
                 .subexpression(flagsSubExpression)
                 .range('0', '9')
                 .endOfInput(),
@@ -349,8 +342,7 @@ class SuperExpressiveTest {
             "^\\d{3,}hello.world[0-9]$",
             SuperExpressive()
                 .startOfInput()
-                .atLeast(3)
-                .digit()
+                .atLeast(3) { digit() }
                 .subexpression(flagsSubExpression) { ignoreFlags = false }
                 .range('0', '9')
                 .endOfInput(),
@@ -364,8 +356,7 @@ class SuperExpressiveTest {
             "^\\d{3,}(?:hello.world)+[0-9]$",
             SuperExpressive()
                 .startOfInput()
-                .atLeast(3)
-                .digit()
+                .atLeast(3) { digit() }
                 .oneOrMore()
                 .subexpression(simpleSubExpression)
                 .range('0', '9')
