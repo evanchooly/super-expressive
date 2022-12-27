@@ -52,7 +52,7 @@ interface RegularExpression {
          *
          * **Example**
          * ```kotlin
-         * val regex = ignoreCase() .string("HELLO") .toRegex()
+         * ignoreCase() .string("HELLO")
          *
          * // yields:  "HELLO"i
          * ```
@@ -71,9 +71,8 @@ interface RegularExpression {
          * **Example**
          *
          * ```kotlin
-         * val regex = multiLine()
+         * multiLine()
          *     .string("^hello$")
-         *     .toRegex()
          *
          * // yields:  "\^hello\$"m
          * ```
@@ -263,7 +262,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = anyChar().toRegex()
+     * anyChar()
      *
      * // yields:  "."
      * ```
@@ -277,13 +276,11 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex =
-     *   anyOf {
-     *     .range("a", "f")
-     *     .range("0", "9")
-     *     .string("XXX")
-     *   }
-     *   .toRegex()
+     * anyOf {
+     *   .range("a", "f")
+     *   .range("0", "9")
+     *   .string("XXX")
+     * }
      *
      * // yields:  "(?:XXX|[a-f0-9])"
      * ```
@@ -295,11 +292,10 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = assertAhead {
-     *     .range("a", "f")
-     *   }
-     *   .range("a", "z")
-     *   .toRegex()
+     * assertAhead {
+     *   .range("a", "f")
+     * }
+     * .range("a", "z")
      *
      * // yields:  "(?=[a-f])[a-z]"
      * ```
@@ -312,11 +308,10 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = assertBehind {
-     *     .string("hello ")
-     *   }
-     *   .string("world")
-     *   .toRegex()
+     * assertBehind {
+     *   .string("hello ")
+     * }
+     * .string("world")
      *
      * // yields:  "(?<=hello )world"
      * ```
@@ -328,11 +323,10 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = assertNotAhead {
-     *     .range("a", "f")
-     *   }
-     *   .range("g", "z")
-     *   .toRegex()
+     * assertNotAhead {
+     *   .range("a", "f")
+     * }
+     * .range("g", "z")
      *
      * // yields:  "(?![a-f])[g-z]"
      * ```
@@ -345,11 +339,10 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = assertNotBehind {
-     *     .string("hello ")
-     *   }
-     *   .string("world")
-     *   .toRegex()
+     * assertNotBehind {
+     *   .string("hello ")
+     * }
+     * .string("world")
      *
      * // yields:  "(?<!hello )world"
      * ```
@@ -363,14 +356,13 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = capture {
-     *     .range("a", "f")
-     *     .range("0", "9")
-     *     .string("XXX")
-     *   }
-     *   .string("something else")
-     *   .backreference(1)
-     *   .toRegex()
+     * capture {
+     *   .range("a", "f")
+     *   .range("0", "9")
+     *   .string("XXX")
+     * }
+     * .string("something else")
+     * .backreference(1)
      *
      * // yields:  "([a-f][0-9]XXX)something else\1"
      * ```
@@ -385,15 +377,13 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex =
-     *   capture {
-     *     .range("a", "f")
-     *     .range("0", "9")
-     *     .string("XXX")
-     *   }
-     *   .toRegex()
-     * // ->
-     * /([a-f][0-9]XXX)/
+     * capture {
+     *   .range("a", "f")
+     *   .range("0", "9")
+     *   .string("XXX")
+     * }
+     *
+     * // yields:  "([a-f][0-9]XXX)"
      * ```
      */
     fun capture(body: RegularExpression.() -> RegularExpression): RegularExpression
@@ -403,7 +393,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = carriageReturn().toRegex()
+     * carriageReturn()
      *
      * // yields:  "\r"
      * ```
@@ -423,7 +413,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = char("x").toRegex()
+     * char("x")
      *
      * // yields:  "x"
      * ```
@@ -435,7 +425,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = digit().toRegex()
+     * digit()
      *
      * // yields:  "\d"
      * ```
@@ -449,12 +439,13 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = optional().group {
+     * optional {
+     *   group {
      *     .range("a", "f")
      *     .range("0", "9")
      *     .string("XXX")
      *   }
-     *   .toRegex()
+     * }
      *
      * // yields:  "(?:[a-f][0-9]XXX)?"
      * ```
@@ -466,14 +457,13 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = namedCapture("interestingStuff") {
-     *     .range("a", "f")
-     *     .range("0", "9")
-     *     .string("XXX")
-     *   }
-     *   .string("something else")
-     *   .namedBackreference("interestingStuff")
-     *   .toRegex()
+     * namedCapture("interestingStuff") {
+     *   .range("a", "f")
+     *   .range("0", "9")
+     *   .string("XXX")
+     * }
+     * .string("something else")
+     * .namedBackreference("interestingStuff")
      *
      * // yields:  "(?<interestingStuff>[a-f][0-9]XXX)something else\k<interestingStuff>"
      * ```
@@ -489,12 +479,11 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = namedCapture("interestingStuff") {
-     *     .range("a", "f")
-     *     .range("0", "9")
-     *     .string("XXX")
-     *   }
-     *   .toRegex()
+     * namedCapture("interestingStuff") {
+     *   .range("a", "f")
+     *   .range("0", "9")
+     *   .string("XXX")
+     * }
      *
      * // yields:  "(?<interestingStuff>[a-f][0-9]XXX)"
      * ```
@@ -509,7 +498,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = newline().toRegex()
+     * newline()
      *
      * // yields:  "\n"
      * ```
@@ -524,7 +513,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = nonDigit().toRegex()
+     * nonDigit()
      *
      * // yields:  "\D"
      * ```
@@ -537,7 +526,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = nonWhitespaceChar().toRegex()
+     * nonWhitespaceChar()
      *
      * // yields:  "\S"
      * ```
@@ -550,7 +539,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = nonWord().toRegex()
+     * nonWord()
      *
      * // yields:  "\W"
      * ```
@@ -564,7 +553,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = digit().nonWordBoundary().toRegex()
+     * digit().nonWordBoundary()
      *
      * // yields:  "\d\B"
      * ```
@@ -578,7 +567,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = oneOrMore().digit().toRegex()
+     * oneOrMore { digit() }
      *
      * // yields:  "\d+"
      * ```
@@ -591,7 +580,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = oneOrMoreLazy().digit().toRegex()
+     * oneOrMoreLazy { digit() }
      *
      * // yields:  "\d+?"
      * ```
@@ -603,7 +592,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = optional().digit() .toRegex()
+     * optional { digit }
      *
      * // yields:  "\d?"
      * ```
@@ -616,7 +605,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = range("a", "z").toRegex()
+     * range("a", "z")
      *
      * // yields:  "[a-z]"
      * ```
@@ -628,7 +617,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = startOfInput().string("hello").toRegex()
+     * startOfInput().string("hello")
      *
      * // yields:  "^hello"
      * ```
@@ -636,11 +625,11 @@ interface RegularExpression {
     fun startOfInput(): RegularExpression
 
     /**
-     * Assert the end of input, or the end of a line when [.lineByLine](#lineByLine) is used.
+     * Assert the end of input.
      *
      * **Example**
      * ```kotlin
-     * val regex = string("hello").endOfInput.toRegex()
+     * string("hello").endOfInput()
      *
      * // yields:  "hello$"
      * ```
@@ -652,7 +641,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = string("hello").toRegex()
+     * string("hello")
      *
      * // yields:  "hello"
      * ```
@@ -664,7 +653,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = tab().toRegex()
+     * tab()
      *
      * // yields:  "\t"
      * ```
@@ -677,9 +666,8 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * ```
-     * val regex = whitespaceChar().toRegex()
-     * ```
+     * whitespaceChar()
+     *
      * // yields:  "\s"
      * ```
      *
@@ -692,7 +680,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = word().toRegex()
+     * word()
      *
      * // yields:  "\w"
      * ```
@@ -706,7 +694,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = digit().wordBoundary().toRegex()
+     * digit().wordBoundary()
      *
      * // yields:  "\d\b"
      * ```
@@ -719,7 +707,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = zeroOrMore().digit().toRegex()
+     * zeroOrMore { digit() }
      *
      * // yields:  "\d*"
      *
@@ -733,7 +721,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = zeroOrMoreLazy().digit().toRegex()
+     * zeroOrMoreLazy { digit() }
      *
      * // yields:  "\d*?"
      * ```
@@ -745,7 +733,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = exactly(5).digit().toRegex()
+     * exactly(5) { digit() }
      *
      * // yields:  "\d{5}"
      * ```
@@ -760,7 +748,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = atLeast(5).digit().toRegex()
+     * atLeast(5) { digit() }
      *
      * // yields:  "\d{5,}"
      * ```
@@ -775,7 +763,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = between(3, 5).digit().toRegex()
+     * between(3, 5) { digit() }
      *
      * // yields:  "\d{3,5}"
      * ```
@@ -792,7 +780,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = betweenLazy(3, 5).digit().toRegex()
+     * betweenLazy(3, 5) { digit() }
      *
      * // yields:  "\d{3,5}?"
      * ```
@@ -808,7 +796,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = anyOfChars("aeiou").toRegex()
+     * anyOfChars("aeiou")
      *
      * // yields:  "[aeiou]"
      * ```
@@ -820,7 +808,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = anythingButChars("aeiou").toRegex()
+     * anythingButChars("aeiou")
      *
      * // yields:  "[^aeiou]"
      * ```
@@ -833,7 +821,7 @@ interface RegularExpression {
      *
      * **Example**
      * ```kotlin
-     * val regex = anythingButRange(0, 9).toRegex()
+     * anythingButRange(0, 9)
      *
      * // yields:  "[^0-9]"
      * ```
@@ -843,17 +831,16 @@ interface RegularExpression {
     /**
      * Matches another SuperExpressive instance inline. Can be used to create libraries, or to
      * modularise you code. By default, flags and start/end of input markers are ignored, but can be
-     * explcitly turned on in the options object.
+     * explicitly turned on in the options object.
      *
      * **Example**
      * ```kotlin
      * // A reusable SuperExpressive...
-     * val fiveDigits = exactly(5).digit
+     * val fiveDigits = exactly(5) { digit() }
      *
-     * val regex = oneOrMore().range("a", "z")
-     *   .atLeast(3).anyChar()
+     * oneOrMore { range("a", "z") }
+     *   .atLeast(3) { anyChar() }
      *   .subexpression(fiveDigits)
-     *   .toRegex()
      *
      * // yields:  "[a-z]+.{3,}\d{5}"
      * ```
