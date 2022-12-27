@@ -41,7 +41,7 @@ SuperExpressive turns those complex and unwieldy regexes that appear in code rev
 <dependency>
     <groupId>com.antwerkz.super-expressive</groupId>
     <artifactId>super-expressive</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -53,7 +53,7 @@ companion object and this then bootstraps you in to a proper `RegularExpression`
 ## Again, WHY?
 
 This project caught my eye a while back and it was intriguing.  I like writing DSLs in Kotlin and thought I'd give it a try.  I 
-didn't/don't know typescript but learned a little bit when porting this.  Not quite enough of it as there are couple of dark corners 
+didn't/don't know typescript but learned a little when porting this.  Not quite enough of it as there are a couple of dark corners 
 that I would love to clean up but they break things so they're still slightly gnarly.
 
 Will anyone use this library?  Will *I* use it?  I don't know.  The point was to have fun porting it.  Perhaps you will find it useful 
