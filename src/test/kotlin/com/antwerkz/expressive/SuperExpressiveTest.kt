@@ -164,9 +164,9 @@ class SuperExpressiveTest {
 
         testRegexEquality("(?<!hello )[a-z]", assertNotBehind { string("hello ") }.range('a', 'z'))
 
-        testRegexEquality("\\w?", optional().word())
-        testRegexEquality("\\w*", zeroOrMore().word())
-        testRegexEquality("\\w*?", zeroOrMoreLazy().word())
+        testRegexEquality("\\w?", optional { word() })
+        testRegexEquality("\\w*", zeroOrMore { word() })
+        testRegexEquality("\\w*?", zeroOrMoreLazy { word() })
         testRegexEquality("\\w+", oneOrMore { word() })
         testRegexEquality("\\w+?", oneOrMoreLazy { word() })
         testRegexEquality("\\w{4}", exactly(4) { word() })
@@ -207,7 +207,7 @@ class SuperExpressiveTest {
             SuperExpressive()
                 .string("outer begin")
                 .namedCapture("innerSubExpression") {
-                    optional().subexpression(nestedSubexpression)
+                    optional { subexpression(nestedSubexpression) }
                 }
                 .string("outer end")
 

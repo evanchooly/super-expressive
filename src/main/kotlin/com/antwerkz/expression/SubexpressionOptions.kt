@@ -10,7 +10,7 @@ package com.antwerkz.expression
  */
 data class SubexpressionOptions(
     var ignoreFlags: Boolean = true,
-    var namespace: String? = null,
+    var namespace: String = "",
     var ignoreStartAndEnd: Boolean = true
 ) {
     companion object {

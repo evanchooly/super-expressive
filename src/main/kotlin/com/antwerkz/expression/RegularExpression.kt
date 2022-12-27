@@ -158,8 +158,10 @@ interface RegularExpression {
             return SuperExpressive().oneOrMoreLazy(expression)
         }
 
-        override fun optional(): RegularExpression {
-            return SuperExpressive().optional()
+        override fun optional(
+            expression: RegularExpression.() -> RegularExpression
+        ): RegularExpression {
+            return SuperExpressive().optional(expression)
         }
 
         override fun range(start: Char, end: Char): RegularExpression {
@@ -194,12 +196,16 @@ interface RegularExpression {
             return SuperExpressive().wordBoundary()
         }
 
-        override fun zeroOrMore(): RegularExpression {
-            return SuperExpressive().zeroOrMore()
+        override fun zeroOrMore(
+            expression: RegularExpression.() -> RegularExpression
+        ): RegularExpression {
+            return SuperExpressive().zeroOrMore(expression)
         }
 
-        override fun zeroOrMoreLazy(): RegularExpression {
-            return SuperExpressive().zeroOrMoreLazy()
+        override fun zeroOrMoreLazy(
+            expression: RegularExpression.() -> RegularExpression
+        ): RegularExpression {
+            return SuperExpressive().zeroOrMoreLazy(expression)
         }
 
         override fun exactly(
@@ -602,7 +608,7 @@ interface RegularExpression {
      * // yields:  "\d?"
      * ```
      */
-    fun optional(): RegularExpression
+    fun optional(expression: RegularExpression.() -> RegularExpression): RegularExpression
 
     /**
      * Matches any character that falls between `a` and `b`. Ordering is defined by a characters
@@ -719,7 +725,7 @@ interface RegularExpression {
      *
      * ```
      */
-    fun zeroOrMore(): RegularExpression
+    fun zeroOrMore(expression: RegularExpression.() -> RegularExpression): RegularExpression
 
     /**
      * Assert that the proceeding element may not be matched, or may be matched multiple times, but
@@ -732,7 +738,7 @@ interface RegularExpression {
      * // yields:  "\d*?"
      * ```
      */
-    fun zeroOrMoreLazy(): RegularExpression
+    fun zeroOrMoreLazy(expression: RegularExpression.() -> RegularExpression): RegularExpression
 
     /**
      * Assert that the proceeding element will be matched exactly `n` times.

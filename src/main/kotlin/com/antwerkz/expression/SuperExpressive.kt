@@ -126,7 +126,7 @@ internal class SuperExpressive : RegularExpression {
 
     private fun trackNamedGroup(name: String) {
         if (this.state.namedGroups.contains(name))
-            throw IllegalStateException("cannot use ${name} again for a capture group")
+            throw IllegalStateException("cannot use $name again for a capture group")
         this.state.namedGroups.push(name)
     }
 
@@ -140,14 +140,13 @@ internal class SuperExpressive : RegularExpression {
 
     override fun nonWordBoundary() = matchElement(Types.nonWordBoundary())
 
-    //    fun nullByte() = matchElement(Types.nullByte())
-
     override fun oneOrMore(expression: RegularExpression.() -> RegularExpression) =
         quantifierElement(Types.oneOrMore()).expression()
     override fun oneOrMoreLazy(expression: RegularExpression.() -> RegularExpression) =
         quantifierElement(Types.oneOrMoreLazy()).expression()
 
-    override fun optional() = quantifierElement(Types.optional())
+    override fun optional(expression: RegularExpression.() -> RegularExpression) =
+        quantifierElement(Types.optional()).expression()
 
     override fun range(start: Char, end: Char): RegularExpression {
         if (start >= end) {
@@ -158,8 +157,6 @@ internal class SuperExpressive : RegularExpression {
 
         return with { getCurrentFrame().elements.push(applyQuantifier(Types.range(start, end))) }
     }
-
-    //    fun singleLine(): SuperExpressive = TODO("Not yet implemented")
 
     override fun startOfInput(): RegularExpression {
         return with {
@@ -235,8 +232,11 @@ internal class SuperExpressive : RegularExpression {
 
     private fun <E> MutableList<E>.pop(): E = removeLast()
 
-    override fun zeroOrMore() = quantifierElement(Types.zeroOrMore())
-    override fun zeroOrMoreLazy() = quantifierElement(Types.zeroOrMoreLazy())
+    override fun zeroOrMore(expression: RegularExpression.() -> RegularExpression) =
+        quantifierElement(Types.zeroOrMore()).expression()
+    override fun zeroOrMoreLazy(expression: RegularExpression.() -> RegularExpression) =
+        quantifierElement(Types.zeroOrMoreLazy()).expression()
+
     private fun quantifierElement(type: Type) = with { getCurrentFrame().quantifier(type) }
 
     override fun exactly(count: Int, expression: RegularExpression.() -> RegularExpression) =
@@ -313,16 +313,14 @@ internal class SuperExpressive : RegularExpression {
         }
 
         if (nextEl is NamedCapture) {
-            val groupName =
-                if (options.namespace != null) "${options.namespace}${nextEl.name}"
-                else nextEl.name!!
+            val groupName = "${options.namespace}${nextEl.name}"
 
             parent.trackNamedGroup(groupName)
             nextEl.name = groupName
         }
 
         if (nextEl is NamedBackReference) {
-            nextEl.name = options.namespace?.let { "${it}${nextEl.name}" } ?: nextEl.name
+            nextEl.name = "${options.namespace}${nextEl.name}"
         }
 
         if (nextEl.containsChildren) {
