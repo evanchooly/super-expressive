@@ -167,8 +167,8 @@ class SuperExpressiveTest {
         testRegexEquality("\\w?", optional().word())
         testRegexEquality("\\w*", zeroOrMore().word())
         testRegexEquality("\\w*?", zeroOrMoreLazy().word())
-        testRegexEquality("\\w+", oneOrMore().word())
-        testRegexEquality("\\w+?", oneOrMoreLazy().word())
+        testRegexEquality("\\w+", oneOrMore { word() })
+        testRegexEquality("\\w+?", oneOrMoreLazy { word() })
         testRegexEquality("\\w{4}", exactly(4) { word() })
         testRegexEquality("\\w{4,}", atLeast(4) { word() })
         testRegexEquality("\\w{4,7}", between(4, 7) { word() })
@@ -357,8 +357,7 @@ class SuperExpressiveTest {
             SuperExpressive()
                 .startOfInput()
                 .atLeast(3) { digit() }
-                .oneOrMore()
-                .subexpression(simpleSubExpression)
+                .oneOrMore { subexpression(simpleSubExpression) }
                 .range('0', '9')
                 .endOfInput()
         )

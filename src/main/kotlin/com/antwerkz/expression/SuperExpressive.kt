@@ -142,8 +142,10 @@ internal class SuperExpressive : RegularExpression {
 
     //    fun nullByte() = matchElement(Types.nullByte())
 
-    override fun oneOrMore() = quantifierElement(Types.oneOrMore())
-    override fun oneOrMoreLazy() = quantifierElement(Types.oneOrMoreLazy())
+    override fun oneOrMore(expression: RegularExpression.() -> RegularExpression) =
+        quantifierElement(Types.oneOrMore()).expression()
+    override fun oneOrMoreLazy(expression: RegularExpression.() -> RegularExpression) =
+        quantifierElement(Types.oneOrMoreLazy()).expression()
 
     override fun optional() = quantifierElement(Types.optional())
 

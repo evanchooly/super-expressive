@@ -146,12 +146,16 @@ interface RegularExpression {
             return SuperExpressive().nonWordBoundary()
         }
 
-        override fun oneOrMore(): RegularExpression {
-            return SuperExpressive().oneOrMore()
+        override fun oneOrMore(
+            expression: RegularExpression.() -> RegularExpression
+        ): RegularExpression {
+            return SuperExpressive().oneOrMore(expression)
         }
 
-        override fun oneOrMoreLazy(): RegularExpression {
-            return SuperExpressive().oneOrMoreLazy()
+        override fun oneOrMoreLazy(
+            expression: RegularExpression.() -> RegularExpression
+        ): RegularExpression {
+            return SuperExpressive().oneOrMoreLazy(expression)
         }
 
         override fun optional(): RegularExpression {
@@ -573,7 +577,7 @@ interface RegularExpression {
      * // yields:  "\d+"
      * ```
      */
-    fun oneOrMore(): RegularExpression
+    fun oneOrMore(expression: RegularExpression.() -> RegularExpression): RegularExpression
 
     /**
      * Assert that the proceeding element may be matched once, or may be matched multiple times, but
@@ -586,7 +590,7 @@ interface RegularExpression {
      * // yields:  "\d+?"
      * ```
      */
-    fun oneOrMoreLazy(): RegularExpression
+    fun oneOrMoreLazy(expression: RegularExpression.() -> RegularExpression): RegularExpression
 
     /**
      * Assert that the proceeding element may or may not be matched.
