@@ -29,7 +29,7 @@ That's where **Super Expressive** comes in. It provides a programmatic and human
       .char('#')
   }
 ```
-- order matters! quantifiers are specified before the thing they change, just like in English (e.g. `val regex = exactly(5).digit`)
+- order matters! quantifiers are specified before the thing they change, just like in English (e.g. `exactly(5) { digit() }`)
 - if you make a mistake, you'll know how to fix it. SuperExpressive will guide you towards a fix if your expression is invalid
 - [subexpressions](#subexpressionexpr-opts) can be used to create meaningful, reusable components
 
