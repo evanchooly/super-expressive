@@ -141,12 +141,12 @@ internal class SuperExpressive : RegularExpression {
     override fun nonWordBoundary() = matchElement(Types.nonWordBoundary())
 
     override fun oneOrMore(expression: RegularExpression.() -> RegularExpression) =
-        quantifierElement(Types.oneOrMore()).expression()
+        quantifierElement(Types.oneOrMore(), expression)
     override fun oneOrMoreLazy(expression: RegularExpression.() -> RegularExpression) =
-        quantifierElement(Types.oneOrMoreLazy()).expression()
+        quantifierElement(Types.oneOrMoreLazy(), expression)
 
     override fun optional(expression: RegularExpression.() -> RegularExpression) =
-        quantifierElement(Types.optional()).expression()
+        quantifierElement(Types.optional(), expression)
 
     override fun range(start: Char, end: Char): RegularExpression {
         if (start >= end) {
@@ -233,11 +233,14 @@ internal class SuperExpressive : RegularExpression {
     private fun <E> MutableList<E>.pop(): E = removeLast()
 
     override fun zeroOrMore(expression: RegularExpression.() -> RegularExpression) =
-        quantifierElement(Types.zeroOrMore()).expression()
+        quantifierElement(Types.zeroOrMore(), expression)
     override fun zeroOrMoreLazy(expression: RegularExpression.() -> RegularExpression) =
-        quantifierElement(Types.zeroOrMoreLazy()).expression()
+        quantifierElement(Types.zeroOrMoreLazy(), expression)
 
-    private fun quantifierElement(type: Type) = with { getCurrentFrame().quantifier(type) }
+    private fun quantifierElement(
+        type: Type,
+        expression: RegularExpression.() -> RegularExpression
+    ) = with { getCurrentFrame().quantifier(type) }.expression()
 
     override fun exactly(count: Int, expression: RegularExpression.() -> RegularExpression) =
         with { getCurrentFrame().quantifier(Types.exactly(count)) }.expression()
