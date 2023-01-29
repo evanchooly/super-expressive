@@ -45,7 +45,7 @@ SuperExpressive turns those complex and unwieldy regexes that appear in code rev
 </dependency>
 ```
 
-There is really only one type to be concerned with:  `RegularExpression`.  In the dokka pages, all of the methods have short examples 
+There is really only one type to be concerned with:  `RegularExpression`.  In the dokka pages, all the methods have short examples 
 showing their usage and the regex values generated.  You'll note that each of these examples start off with what appears to be function 
 calls with no type associated with them.  What's happening there is that those initial calls are issued against the `RegularExpression` 
 companion object and this then bootstraps you in to a proper `RegularExpression` builder. 
