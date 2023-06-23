@@ -1,11 +1,12 @@
 package com.antwerkz.expression.types
 
 internal abstract class Type(var value: Any? = null) {
-    var containsChildren: Boolean = false
-    var quantifierRequiresGroup: Boolean = false
+    var containsChildren = false
+    var quantifierRequiresGroup = false
+    var fusible = false
     var times: List<Int> = emptyList()
     var name: String? = null
-    var index: Int = 0
+    var index = 0
 
     constructor(original: Type) : this(original.value) {
         this.name = original.name

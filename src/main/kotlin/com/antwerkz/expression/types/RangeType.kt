@@ -1,6 +1,9 @@
 package com.antwerkz.expression.types
 
 internal class RangeType(start: Char, end: Char) : Type(listOf(start, end)) {
+    init {
+        fusible = true
+    }
     @Suppress("UNCHECKED_CAST")
     override fun copy(): Type {
         val list = value as List<Char>

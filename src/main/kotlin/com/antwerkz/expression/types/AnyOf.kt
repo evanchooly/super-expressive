@@ -1,7 +1,5 @@
 package com.antwerkz.expression.types
 
-import java.util.function.Predicate
-
 internal class AnyOf : Type("anyOf") {
     companion object {
         private fun fuseElements(elements: List<Type>): Pair<String, List<Type>> {
@@ -10,6 +8,8 @@ internal class AnyOf : Type("anyOf") {
                 fusables.joinToString("") { el ->
                     if (el is CharType || el is AnyOfChars) {
                         el.value.toString()
+                    } else if (el !is RangeType) {
+                        el.evaluate()
                     } else {
                         val value = el.value as List<*>
                         "${value[0]}-${value[1]}"
@@ -19,15 +19,11 @@ internal class AnyOf : Type("anyOf") {
         }
 
         private fun partition(elements: List<Type>): Pair<List<Type>, List<Type>> {
-            val predicate =
-                Predicate<Type> { type ->
-                    type is RangeType || type is CharType || type is AnyOfChars
-                }
             val fused = mutableListOf<Type>()
             val rest = mutableListOf<Type>()
 
             elements.forEach {
-                if (predicate.test(it)) {
+                if (it.fusible) {
                     fused += it
                 } else {
                     rest += it

@@ -101,7 +101,7 @@ class SuperExpressiveTest {
         testRegexEquality("\\t", tab())
 
         testRegexEquality(
-            "(?:hello|\\d|\\w|[\\.#])",
+            """(?:hello|[\d\w\.#])""",
             anyOf { string("hello").digit().word().char('.').char('#') }
         )
 
@@ -185,6 +185,14 @@ class SuperExpressiveTest {
         testErrorCondition("s cannot be an empty string") { string("") }
 
         testRegexEquality("h", char('h'))
+    }
+
+    @Test
+    fun testFusing() {
+        testRegexEquality(
+            """(?:hello|[\d\w\.#])""",
+            anyOf { string("hello").digit().word().char('.').char('#') }
+        )
     }
 
     @Test
