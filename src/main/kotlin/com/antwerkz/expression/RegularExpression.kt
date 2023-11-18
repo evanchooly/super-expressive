@@ -51,6 +51,7 @@ interface RegularExpression {
          * the uppercase/lowercase distinction when matching.
          *
          * **Example**
+         *
          * ```kotlin
          * ignoreCase() .string("HELLO")
          *
@@ -261,6 +262,7 @@ interface RegularExpression {
      * Matches any single character.
      *
      * **Example**
+     *
      * ```kotlin
      * anyChar()
      *
@@ -275,6 +277,7 @@ interface RegularExpression {
      * Matches a choice between specified elements.
      *
      * **Example**
+     *
      * ```kotlin
      * anyOf {
      *   .range("a", "f")
@@ -291,6 +294,7 @@ interface RegularExpression {
      * Assert that the proceeding elements are found without consuming them.
      *
      * **Example**
+     *
      * ```kotlin
      * assertAhead {
      *   .range("a", "f")
@@ -307,6 +311,7 @@ interface RegularExpression {
      * string.
      *
      * **Example**
+     *
      * ```kotlin
      * assertBehind {
      *   .string("hello ")
@@ -322,6 +327,7 @@ interface RegularExpression {
      * Assert that the proceeding elements are **not** found without consuming them.
      *
      * **Example**
+     *
      * ```kotlin
      * assertNotAhead {
      *   .range("a", "f")
@@ -338,6 +344,7 @@ interface RegularExpression {
      * the string.`.
      *
      * **Example**
+     *
      * ```kotlin
      * assertNotBehind {
      *   .string("hello ")
@@ -355,6 +362,7 @@ interface RegularExpression {
      * the first capture group has index 1.
      *
      * **Example**
+     *
      * ```kotlin
      * capture {
      *   .range("a", "f")
@@ -376,6 +384,7 @@ interface RegularExpression {
      * [backreference(index)](#backreferenceindex).
      *
      * **Example**
+     *
      * ```kotlin
      * capture {
      *   .range("a", "f")
@@ -392,26 +401,36 @@ interface RegularExpression {
      * Matches a `\r` character.
      *
      * **Example**
+     *
      * ```kotlin
      * carriageReturn()
      *
      * // yields:  "\r"
      * ```
+     *
      * @return the updated expression
      */
     fun carriageReturn(): RegularExpression
+
     fun ignoreCase(): RegularExpression
+
     fun multiLine(): RegularExpression
+
     fun allowComments(): RegularExpression
+
     fun canonicalEquivalence(): RegularExpression
+
     fun dotAll(): RegularExpression
+
     fun literal(): RegularExpression
+
     fun unixLines(): RegularExpression
 
     /**
      * Matches the exact character `c`.
      *
      * **Example**
+     *
      * ```kotlin
      * char("x")
      *
@@ -424,6 +443,7 @@ interface RegularExpression {
      * Matches any digit from `0-9`.
      *
      * **Example**
+     *
      * ```kotlin
      * digit()
      *
@@ -438,6 +458,7 @@ interface RegularExpression {
      * Creates a non-capturing group of the proceeding elements.
      *
      * **Example**
+     *
      * ```kotlin
      * optional {
      *   group {
@@ -456,6 +477,7 @@ interface RegularExpression {
      * Matches exactly what was previously matched by a [namedCapture](#namedCapturename).
      *
      * **Example**
+     *
      * ```kotlin
      * namedCapture("interestingStuff") {
      *   .range("a", "f")
@@ -478,6 +500,7 @@ interface RegularExpression {
      * [backreference(index)](#backreferenceindex).
      *
      * **Example**
+     *
      * ```kotlin
      * namedCapture("interestingStuff") {
      *   .range("a", "f")
@@ -497,11 +520,13 @@ interface RegularExpression {
      * Matches a `\n` character.
      *
      * **Example**
+     *
      * ```kotlin
      * newline()
      *
      * // yields:  "\n"
      * ```
+     *
      * @return the updated expression
      */
     fun newline(): RegularExpression
@@ -512,6 +537,7 @@ interface RegularExpression {
      * Matches any non-digit.
      *
      * **Example**
+     *
      * ```kotlin
      * nonDigit()
      *
@@ -525,11 +551,13 @@ interface RegularExpression {
      * `\r\n\t\f\v`.
      *
      * **Example**
+     *
      * ```kotlin
      * nonWhitespaceChar()
      *
      * // yields:  "\S"
      * ```
+     *
      * @return the updated expression
      */
     fun nonWhitespaceChar(): RegularExpression
@@ -538,11 +566,13 @@ interface RegularExpression {
      * Matches any non alpha-numeric (`a-z, A-Z, 0-9`) characters, excluding `_` as well.
      *
      * **Example**
+     *
      * ```kotlin
      * nonWord()
      *
      * // yields:  "\W"
      * ```
+     *
      * @return the updated expression
      */
     fun nonWord(): RegularExpression
@@ -552,6 +582,7 @@ interface RegularExpression {
      * [.word](#word).
      *
      * **Example**
+     *
      * ```kotlin
      * digit().nonWordBoundary()
      *
@@ -566,6 +597,7 @@ interface RegularExpression {
      * Assert that the proceeding element may be matched once, or may be matched multiple times.
      *
      * **Example**
+     *
      * ```kotlin
      * oneOrMore { digit() }
      *
@@ -579,6 +611,7 @@ interface RegularExpression {
      * as few times as possible.
      *
      * **Example**
+     *
      * ```kotlin
      * oneOrMoreLazy { digit() }
      *
@@ -591,6 +624,7 @@ interface RegularExpression {
      * Assert that the proceeding element may or may not be matched.
      *
      * **Example**
+     *
      * ```kotlin
      * optional { digit }
      *
@@ -604,6 +638,7 @@ interface RegularExpression {
      * ASCII or unicode value.
      *
      * **Example**
+     *
      * ```kotlin
      * range("a", "z")
      *
@@ -616,6 +651,7 @@ interface RegularExpression {
      * Assert the start of input, or the start of a line when [.lineByLine](#lineByLine) is used.
      *
      * **Example**
+     *
      * ```kotlin
      * startOfInput().string("hello")
      *
@@ -628,6 +664,7 @@ interface RegularExpression {
      * Assert the end of input.
      *
      * **Example**
+     *
      * ```kotlin
      * string("hello").endOfInput()
      *
@@ -640,6 +677,7 @@ interface RegularExpression {
      * Matches the exact string `s`.
      *
      * **Example**
+     *
      * ```kotlin
      * string("hello")
      *
@@ -652,11 +690,13 @@ interface RegularExpression {
      * Matches a `\t` character.
      *
      * **Example**
+     *
      * ```kotlin
      * tab()
      *
      * // yields:  "\t"
      * ```
+     *
      * @return the updated expression
      */
     fun tab(): RegularExpression
@@ -665,6 +705,7 @@ interface RegularExpression {
      * Matches any whitespace character, including the special whitespace characters: `\r\n\t\f\v`.
      *
      * **Example**
+     *
      * ```kotlin
      * whitespaceChar()
      *
@@ -679,11 +720,13 @@ interface RegularExpression {
      * Matches any alpha-numeric (`a-z, A-Z, 0-9`) characters, as well as `_`.
      *
      * **Example**
+     *
      * ```kotlin
      * word()
      *
      * // yields:  "\w"
      * ```
+     *
      * @return the updated expression
      */
     fun word(): RegularExpression
@@ -693,11 +736,13 @@ interface RegularExpression {
      * [.word](#word) and a character not matched by [.word](#word) (in either order).
      *
      * **Example**
+     *
      * ```kotlin
      * digit().wordBoundary()
      *
      * // yields:  "\d\b"
      * ```
+     *
      * @return the updated expression
      */
     fun wordBoundary(): RegularExpression
@@ -706,6 +751,7 @@ interface RegularExpression {
      * Assert that the proceeding element may not be matched, or may be matched multiple times.
      *
      * **Example**
+     *
      * ```kotlin
      * zeroOrMore { digit() }
      *
@@ -720,6 +766,7 @@ interface RegularExpression {
      * as few times as possible.
      *
      * **Example**
+     *
      * ```kotlin
      * zeroOrMoreLazy { digit() }
      *
@@ -732,6 +779,7 @@ interface RegularExpression {
      * Assert that the proceeding element will be matched exactly `n` times.
      *
      * **Example**
+     *
      * ```kotlin
      * exactly(5) { digit() }
      *
@@ -747,6 +795,7 @@ interface RegularExpression {
      * Assert that the proceeding element will be matched at least `n` times.
      *
      * **Example**
+     *
      * ```kotlin
      * atLeast(5) { digit() }
      *
@@ -762,6 +811,7 @@ interface RegularExpression {
      * Assert that the proceeding element will be matched somewhere between `x` and `y` times.
      *
      * **Example**
+     *
      * ```kotlin
      * between(3, 5) { digit() }
      *
@@ -779,6 +829,7 @@ interface RegularExpression {
      * as few times as possible.
      *
      * **Example**
+     *
      * ```kotlin
      * betweenLazy(3, 5) { digit() }
      *
@@ -795,6 +846,7 @@ interface RegularExpression {
      * Matches any of the characters in the provided string `chars`.
      *
      * **Example**
+     *
      * ```kotlin
      * anyOfChars("aeiou")
      *
@@ -807,6 +859,7 @@ interface RegularExpression {
      * Matches any character except those in the provided string `chars`.
      *
      * **Example**
+     *
      * ```kotlin
      * anythingButChars("aeiou")
      *
@@ -820,6 +873,7 @@ interface RegularExpression {
      * specified by `a` and `b`.
      *
      * **Example**
+     *
      * ```kotlin
      * anythingButRange(0, 9)
      *
@@ -834,6 +888,7 @@ interface RegularExpression {
      * explicitly turned on in the options object.
      *
      * **Example**
+     *
      * ```kotlin
      * // A reusable SuperExpressive...
      * val fiveDigits = exactly(5) { digit() }

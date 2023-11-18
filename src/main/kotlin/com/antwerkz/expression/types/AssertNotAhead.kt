@@ -4,6 +4,7 @@ internal class AssertNotAhead : Type("assertNotAhead") {
     init {
         containsChildren = true
     }
+
     override fun copy() = AssertNotAhead().copy(this)
 
     override fun evaluate(): String {

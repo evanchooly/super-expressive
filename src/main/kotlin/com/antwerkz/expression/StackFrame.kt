@@ -14,6 +14,7 @@ internal data class StackFrame(
         original.quantifier?.copy(),
         original.elements.map { it.copy() }.toMutableList()
     )
+
     fun quantifier(quantifier: Type) {
         if (this.quantifier != null) {
             throw IllegalStateException(

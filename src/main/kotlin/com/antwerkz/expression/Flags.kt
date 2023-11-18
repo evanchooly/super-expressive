@@ -16,18 +16,23 @@ internal data class Flags(val options: MutableSet<RegexOption> = mutableSetOf())
     fun multiLine() {
         options += MULTILINE
     }
+
     fun canonicalEquivalance() {
         options += CANON_EQ
     }
+
     fun allowComments() {
         options += COMMENTS
     }
+
     fun dotAll() {
         options += DOT_MATCHES_ALL
     }
+
     fun literal() {
         options += LITERAL
     }
+
     fun unixLines() {
         options += UNIX_LINES
     }

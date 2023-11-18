@@ -70,12 +70,19 @@ internal class SuperExpressive : RegularExpression {
     }
 
     override fun carriageReturn() = matchElement(Types.carriageReturn())
+
     override fun ignoreCase() = with { state.flags.ignoreCase() }
+
     override fun multiLine() = with { state.flags.multiLine() }
+
     override fun allowComments() = with { state.flags.allowComments() }
+
     override fun canonicalEquivalence() = with { state.flags.canonicalEquivalance() }
+
     override fun dotAll() = with { state.flags.dotAll() }
+
     override fun literal() = with { state.flags.literal() }
+
     override fun unixLines() = with { state.flags.unixLines() }
 
     override fun char(c: Char): RegularExpression {
@@ -142,6 +149,7 @@ internal class SuperExpressive : RegularExpression {
 
     override fun oneOrMore(expression: RegularExpression.() -> RegularExpression) =
         quantifierElement(Types.oneOrMore(), expression)
+
     override fun oneOrMoreLazy(expression: RegularExpression.() -> RegularExpression) =
         quantifierElement(Types.oneOrMoreLazy(), expression)
 
@@ -226,6 +234,7 @@ internal class SuperExpressive : RegularExpression {
         specialChars.forEach { char -> escaped = escaped.replace(char, "\\${char}") }
         return escaped
     }
+
     private fun <E> MutableList<E>.push(element: E) {
         add(element)
     }
@@ -234,6 +243,7 @@ internal class SuperExpressive : RegularExpression {
 
     override fun zeroOrMore(expression: RegularExpression.() -> RegularExpression) =
         quantifierElement(Types.zeroOrMore(), expression)
+
     override fun zeroOrMoreLazy(expression: RegularExpression.() -> RegularExpression) =
         quantifierElement(Types.zeroOrMoreLazy(), expression)
 
@@ -244,6 +254,7 @@ internal class SuperExpressive : RegularExpression {
 
     override fun exactly(count: Int, expression: RegularExpression.() -> RegularExpression) =
         with { getCurrentFrame().quantifier(Types.exactly(count)) }.expression()
+
     override fun atLeast(count: Int, expression: RegularExpression.() -> RegularExpression) =
         with { getCurrentFrame().quantifier(Types.atLeast(count)) }.expression()
 
@@ -258,6 +269,7 @@ internal class SuperExpressive : RegularExpression {
 
         return with { getCurrentFrame().quantifier(Types.between(x, y)) }.expression()
     }
+
     override fun betweenLazy(
         x: Int,
         y: Int,
@@ -278,6 +290,7 @@ internal class SuperExpressive : RegularExpression {
             currentFrame.elements.push(applyQuantifier(elementValue))
         }
     }
+
     override fun anythingButChars(chars: String): RegularExpression {
         return with {
             val elementValue = Types.anythingButChars(chars.escapeSpecial())

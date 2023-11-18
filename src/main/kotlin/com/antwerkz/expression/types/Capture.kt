@@ -4,6 +4,7 @@ internal class Capture : Type("capture") {
     init {
         containsChildren = true
     }
+
     override fun copy() = Capture().copy(this)
 
     override fun evaluate(): String {

@@ -33,6 +33,7 @@ internal class AnyOf : Type("anyOf") {
             return fused to rest
         }
     }
+
     init {
         containsChildren = true
     }

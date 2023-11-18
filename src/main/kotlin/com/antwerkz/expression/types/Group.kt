@@ -4,6 +4,7 @@ internal class Group : Type("group") {
     init {
         containsChildren = true
     }
+
     override fun copy() = Group().copy(this)
 
     override fun evaluate(): String {
