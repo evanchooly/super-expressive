@@ -38,8 +38,6 @@ jobs:
       - Meta
     if: needs.Meta.outputs.releasable == 'true'
     uses: evanchooly/workflows/.github/workflows/jreleaser.yml@master
-    with:
-      java: 17
     secrets:
       GH_PUSH_TOKEN       : ${{ secrets.GH_PUSH_TOKEN }}
       GPG_PASSPHRASE      : ${{ secrets.GPG_PASSPHRASE }}
