@@ -1,262 +1,9 @@
 package com.antwerkz.expression
 
 interface RegularExpression {
-    companion object : RegularExpression {
-        override fun anyChar(): RegularExpression {
-            return SuperExpressive().anyChar()
-        }
+    companion object : RegularExpression
 
-        override fun anyOf(body: RegularExpression.() -> RegularExpression): RegularExpression {
-            return SuperExpressive().anyOf(body)
-        }
-
-        override fun assertAhead(
-            body: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().assertAhead(body)
-        }
-
-        override fun assertBehind(
-            body: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().assertBehind(body)
-        }
-
-        override fun assertNotAhead(
-            body: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().assertNotAhead(body)
-        }
-
-        override fun assertNotBehind(
-            body: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().assertNotBehind(body)
-        }
-
-        override fun backreference(index: Int): RegularExpression {
-            return SuperExpressive().backreference(index)
-        }
-
-        override fun capture(body: RegularExpression.() -> RegularExpression): RegularExpression {
-            return SuperExpressive().capture(body)
-        }
-
-        override fun carriageReturn(): RegularExpression {
-            return SuperExpressive().carriageReturn()
-        }
-
-        /**
-         * Uses the `i` flag on the regular expression, which indicates that it should treat ignore
-         * the uppercase/lowercase distinction when matching.
-         *
-         * **Example**
-         *
-         * ```kotlin
-         * ignoreCase() .string("HELLO")
-         *
-         * // yields:  "HELLO"i
-         * ```
-         */
-        override fun ignoreCase(): RegularExpression {
-            return SuperExpressive().ignoreCase()
-        }
-
-        /**
-         * ### lineByLine()
-         *
-         * Uses the `m` flag on the regular expression, which indicates that it should treat the
-         * [startOfInput()](#startOfInput()) and [endOfInput()](#endOfInput()) markers as the start
-         * and end of lines.
-         *
-         * **Example**
-         *
-         * ```kotlin
-         * multiLine()
-         *     .string("^hello$")
-         *
-         * // yields:  "\^hello\$"m
-         * ```
-         */
-        override fun multiLine(): RegularExpression {
-            return SuperExpressive().multiLine()
-        }
-
-        override fun allowComments(): RegularExpression {
-            return SuperExpressive().allowComments()
-        }
-
-        override fun canonicalEquivalence(): RegularExpression {
-            return SuperExpressive().canonicalEquivalence()
-        }
-
-        override fun dotAll(): RegularExpression {
-            return SuperExpressive().dotAll()
-        }
-
-        override fun literal(): RegularExpression {
-            return SuperExpressive().literal()
-        }
-
-        override fun unixLines(): RegularExpression {
-            return SuperExpressive().unixLines()
-        }
-
-        override fun char(c: Char): RegularExpression {
-            return SuperExpressive().char(c)
-        }
-
-        override fun digit(): RegularExpression {
-            return SuperExpressive().digit()
-        }
-
-        override fun group(body: RegularExpression.() -> RegularExpression): RegularExpression {
-            return SuperExpressive().group(body)
-        }
-
-        override fun namedBackreference(name: String): RegularExpression {
-            return SuperExpressive().namedBackreference(name)
-        }
-
-        override fun namedCapture(
-            name: String,
-            body: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().namedCapture(name, body)
-        }
-
-        override fun newline(): RegularExpression {
-            return SuperExpressive().newline()
-        }
-
-        override fun nonDigit(): RegularExpression {
-            return SuperExpressive().nonDigit()
-        }
-
-        override fun nonWhitespaceChar(): RegularExpression {
-            return SuperExpressive().nonWhitespaceChar()
-        }
-
-        override fun nonWord(): RegularExpression {
-
-            return SuperExpressive().nonWord()
-        }
-
-        override fun nonWordBoundary(): RegularExpression {
-            return SuperExpressive().nonWordBoundary()
-        }
-
-        override fun oneOrMore(
-            expression: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().oneOrMore(expression)
-        }
-
-        override fun oneOrMoreLazy(
-            expression: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().oneOrMoreLazy(expression)
-        }
-
-        override fun optional(
-            expression: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().optional(expression)
-        }
-
-        override fun range(start: Char, end: Char): RegularExpression {
-            return SuperExpressive().range(start, end)
-        }
-
-        override fun startOfInput(): RegularExpression {
-            return SuperExpressive().startOfInput()
-        }
-
-        override fun endOfInput(): RegularExpression {
-            return SuperExpressive().endOfInput()
-        }
-
-        override fun string(s: String): RegularExpression {
-            return SuperExpressive().string(s)
-        }
-
-        override fun tab(): RegularExpression {
-            return SuperExpressive().tab()
-        }
-
-        override fun whitespaceChar(): RegularExpression {
-            return SuperExpressive().whitespaceChar()
-        }
-
-        override fun word(): RegularExpression {
-            return SuperExpressive().word()
-        }
-
-        override fun wordBoundary(): RegularExpression {
-            return SuperExpressive().wordBoundary()
-        }
-
-        override fun zeroOrMore(
-            expression: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().zeroOrMore(expression)
-        }
-
-        override fun zeroOrMoreLazy(
-            expression: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().zeroOrMoreLazy(expression)
-        }
-
-        override fun exactly(
-            count: Int,
-            expression: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().exactly(count, expression)
-        }
-
-        override fun atLeast(
-            count: Int,
-            expression: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().atLeast(count, expression)
-        }
-
-        override fun between(
-            x: Int,
-            y: Int,
-            expression: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().between(x, y, expression)
-        }
-
-        override fun betweenLazy(
-            x: Int,
-            y: Int,
-            expression: RegularExpression.() -> RegularExpression
-        ): RegularExpression {
-            return SuperExpressive().betweenLazy(x, y, expression)
-        }
-
-        override fun anyOfChars(chars: String): RegularExpression {
-            return SuperExpressive().anyOfChars(chars)
-        }
-
-        override fun anythingButChars(chars: String): RegularExpression {
-            return SuperExpressive().anythingButChars(chars)
-        }
-
-        override fun anythingButRange(start: Char, end: Char): RegularExpression {
-            return SuperExpressive().anythingButRange(start, end)
-        }
-
-        override fun subexpression(
-            expr: RegularExpression,
-            optionsLambda: SubexpressionOptions.() -> Unit
-        ): RegularExpression {
-            return SuperExpressive().subexpression(expr, optionsLambda)
-        }
-    }
+    fun allowComments() = SuperExpressive().allowComments()
 
     /**
      * Matches any single character.
@@ -271,7 +18,7 @@ interface RegularExpression {
      *
      * @return the updated expression
      */
-    fun anyChar(): RegularExpression
+    fun anyChar() = SuperExpressive().anyChar()
 
     /**
      * Matches a choice between specified elements.
@@ -288,7 +35,47 @@ interface RegularExpression {
      * // yields:  "(?:XXX|[a-f0-9])"
      * ```
      */
-    fun anyOf(body: RegularExpression.() -> RegularExpression): RegularExpression
+    fun anyOf(body: RegularExpression.() -> RegularExpression) = SuperExpressive().anyOf(body)
+
+    /**
+     * Matches any of the characters in the provided string `chars`.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * anyOfChars("aeiou")
+     *
+     * // yields:  "[aeiou]"
+     * ```
+     */
+    fun anyOfChars(chars: String) = SuperExpressive().anyOfChars(chars)
+
+    /**
+     * Matches any character except those in the provided string `chars`.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * anythingButChars("aeiou")
+     *
+     * // yields:  "[^aeiou]"
+     * ```
+     */
+    fun anythingButChars(chars: String) = SuperExpressive().anythingButChars(chars)
+
+    /**
+     * Matches any character except those that would be captured by the [.range](#rangea-b)
+     * specified by `a` and `b`.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * anythingButRange(0, 9)
+     *
+     * // yields:  "[^0-9]"
+     * ```
+     */
+    fun anythingButRange(start: Char, end: Char) = SuperExpressive().anythingButRange(start, end)
 
     /**
      * Assert that the proceeding elements are found without consuming them.
@@ -304,7 +91,8 @@ interface RegularExpression {
      * // yields:  "(?=[a-f])[a-z]"
      * ```
      */
-    fun assertAhead(body: RegularExpression.() -> RegularExpression): RegularExpression
+    fun assertAhead(body: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().assertAhead(body)
 
     /**
      * Assert that the elements contained within **are** found immediately before this point in the
@@ -321,7 +109,8 @@ interface RegularExpression {
      * // yields:  "(?<=hello )world"
      * ```
      */
-    fun assertBehind(body: RegularExpression.() -> RegularExpression): RegularExpression
+    fun assertBehind(body: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().assertBehind(body)
 
     /**
      * Assert that the proceeding elements are **not** found without consuming them.
@@ -337,7 +126,8 @@ interface RegularExpression {
      * // yields:  "(?![a-f])[g-z]"
      * ```
      */
-    fun assertNotAhead(body: RegularExpression.() -> RegularExpression): RegularExpression
+    fun assertNotAhead(body: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().assertNotAhead(body)
 
     /**
      * Assert that the elements contained within are **not** found immediately before this point in
@@ -354,7 +144,22 @@ interface RegularExpression {
      * // yields:  "(?<!hello )world"
      * ```
      */
-    fun assertNotBehind(body: RegularExpression.() -> RegularExpression): RegularExpression
+    fun assertNotBehind(body: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().assertNotBehind(body)
+
+    /**
+     * Assert that the proceeding element will be matched at least `n` times.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * atLeast(5) { digit() }
+     *
+     * // yields:  "\d{5,}"
+     * ```
+     */
+    fun atLeast(count: Int, expression: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().atLeast(count, expression)
 
     /**
      * Matches exactly what was previously matched by a [capture](#capture) or
@@ -375,7 +180,38 @@ interface RegularExpression {
      * // yields:  "([a-f][0-9]XXX)something else\1"
      * ```
      */
-    fun backreference(index: Int): RegularExpression
+    fun backreference(index: Int) = SuperExpressive().backreference(index)
+
+    /**
+     * Assert that the proceeding element will be matched somewhere between `x` and `y` times.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * between(3, 5) { digit() }
+     *
+     * // yields:  "\d{3,5}"
+     * ```
+     */
+    fun between(x: Int, y: Int, expression: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().between(x, y, expression)
+
+    /**
+     * Assert that the proceeding element will be matched somewhere between `x` and `y` times, but
+     * as few times as possible.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * betweenLazy(3, 5) { digit() }
+     *
+     * // yields:  "\d{3,5}?"
+     * ```
+     */
+    fun betweenLazy(x: Int, y: Int, expression: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().betweenLazy(x, y, expression)
+
+    fun canonicalEquivalence() = SuperExpressive().canonicalEquivalence()
 
     /**
      * ### capture()
@@ -395,7 +231,7 @@ interface RegularExpression {
      * // yields:  "([a-f][0-9]XXX)"
      * ```
      */
-    fun capture(body: RegularExpression.() -> RegularExpression): RegularExpression
+    fun capture(body: RegularExpression.() -> RegularExpression) = SuperExpressive().capture(body)
 
     /**
      * Matches a `\r` character.
@@ -410,21 +246,7 @@ interface RegularExpression {
      *
      * @return the updated expression
      */
-    fun carriageReturn(): RegularExpression
-
-    fun ignoreCase(): RegularExpression
-
-    fun multiLine(): RegularExpression
-
-    fun allowComments(): RegularExpression
-
-    fun canonicalEquivalence(): RegularExpression
-
-    fun dotAll(): RegularExpression
-
-    fun literal(): RegularExpression
-
-    fun unixLines(): RegularExpression
+    fun carriageReturn() = SuperExpressive().carriageReturn()
 
     /**
      * Matches the exact character `c`.
@@ -437,7 +259,7 @@ interface RegularExpression {
      * // yields:  "x"
      * ```
      */
-    fun char(c: Char): RegularExpression
+    fun char(c: Char) = SuperExpressive().char(c)
 
     /**
      * Matches any digit from `0-9`.
@@ -452,7 +274,36 @@ interface RegularExpression {
      *
      * @return the updated expression
      */
-    fun digit(): RegularExpression
+    fun digit() = SuperExpressive().digit()
+
+    fun dotAll() = SuperExpressive().dotAll()
+
+    /**
+     * Assert the end of input.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * string("hello").endOfInput()
+     *
+     * // yields:  "hello$"
+     * ```
+     */
+    fun endOfInput() = SuperExpressive().endOfInput()
+
+    /**
+     * Assert that the proceeding element will be matched exactly `n` times.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * exactly(5) { digit() }
+     *
+     * // yields:  "\d{5}"
+     * ```
+     */
+    fun exactly(count: Int, expression: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().exactly(count, expression)
 
     /**
      * Creates a non-capturing group of the proceeding elements.
@@ -471,7 +322,41 @@ interface RegularExpression {
      * // yields:  "(?:[a-f][0-9]XXX)?"
      * ```
      */
-    fun group(body: RegularExpression.() -> RegularExpression): RegularExpression
+    fun group(body: RegularExpression.() -> RegularExpression) = SuperExpressive().group(body)
+
+    /**
+     * Uses the `i` flag on the regular expression, which indicates that it should treat ignore the
+     * uppercase/lowercase distinction when matching.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * ignoreCase() .string("HELLO")
+     *
+     * // yields:  "HELLO"i
+     * ```
+     */
+    fun ignoreCase() = SuperExpressive().ignoreCase()
+
+    fun literal() = SuperExpressive().literal()
+
+    /**
+     * ### lineByLine()
+     *
+     * Uses the `m` flag on the regular expression, which indicates that it should treat the
+     * [startOfInput()](#startOfInput()) and [endOfInput()](#endOfInput()) markers as the start and
+     * end of lines.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * multiLine()
+     *     .string("^hello$")
+     *
+     * // yields:  "\^hello\$"m
+     * ```
+     */
+    fun multiLine() = SuperExpressive().multiLine()
 
     /**
      * Matches exactly what was previously matched by a [namedCapture](#namedCapturename).
@@ -490,7 +375,7 @@ interface RegularExpression {
      * // yields:  "(?<interestingStuff>[a-f][0-9]XXX)something else\k<interestingStuff>"
      * ```
      */
-    fun namedBackreference(name: String): RegularExpression
+    fun namedBackreference(name: String) = SuperExpressive().namedBackreference(name)
 
     /**
      * ### namedCapture(name)()
@@ -511,10 +396,8 @@ interface RegularExpression {
      * // yields:  "(?<interestingStuff>[a-f][0-9]XXX)"
      * ```
      */
-    fun namedCapture(
-        name: String,
-        body: RegularExpression.() -> RegularExpression
-    ): RegularExpression
+    fun namedCapture(name: String, body: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().namedCapture(name, body)
 
     /**
      * Matches a `\n` character.
@@ -529,7 +412,7 @@ interface RegularExpression {
      *
      * @return the updated expression
      */
-    fun newline(): RegularExpression
+    fun newline() = SuperExpressive().newline()
 
     /**
      * ### nonDigit()
@@ -544,7 +427,7 @@ interface RegularExpression {
      * // yields:  "\D"
      * ```
      */
-    fun nonDigit(): RegularExpression
+    fun nonDigit() = SuperExpressive().nonDigit()
 
     /**
      * Matches any non-whitespace character, excluding also the special whitespace characters:
@@ -560,7 +443,7 @@ interface RegularExpression {
      *
      * @return the updated expression
      */
-    fun nonWhitespaceChar(): RegularExpression
+    fun nonWhitespaceChar() = SuperExpressive().nonWhitespaceChar()
 
     /**
      * Matches any non alpha-numeric (`a-z, A-Z, 0-9`) characters, excluding `_` as well.
@@ -575,7 +458,7 @@ interface RegularExpression {
      *
      * @return the updated expression
      */
-    fun nonWord(): RegularExpression
+    fun nonWord() = SuperExpressive().nonWord()
 
     /**
      * Matches (without consuming any characters) at the position between two characters matched by
@@ -591,7 +474,7 @@ interface RegularExpression {
      *
      * @return the updated expression
      */
-    fun nonWordBoundary(): RegularExpression
+    fun nonWordBoundary() = SuperExpressive().nonWordBoundary()
 
     /**
      * Assert that the proceeding element may be matched once, or may be matched multiple times.
@@ -604,7 +487,8 @@ interface RegularExpression {
      * // yields:  "\d+"
      * ```
      */
-    fun oneOrMore(expression: RegularExpression.() -> RegularExpression): RegularExpression
+    fun oneOrMore(expression: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().oneOrMore(expression)
 
     /**
      * Assert that the proceeding element may be matched once, or may be matched multiple times, but
@@ -618,7 +502,8 @@ interface RegularExpression {
      * // yields:  "\d+?"
      * ```
      */
-    fun oneOrMoreLazy(expression: RegularExpression.() -> RegularExpression): RegularExpression
+    fun oneOrMoreLazy(expression: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().oneOrMoreLazy(expression)
 
     /**
      * Assert that the proceeding element may or may not be matched.
@@ -631,7 +516,8 @@ interface RegularExpression {
      * // yields:  "\d?"
      * ```
      */
-    fun optional(expression: RegularExpression.() -> RegularExpression): RegularExpression
+    fun optional(expression: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().optional(expression)
 
     /**
      * Matches any character that falls between `a` and `b`. Ordering is defined by a characters
@@ -645,7 +531,7 @@ interface RegularExpression {
      * // yields:  "[a-z]"
      * ```
      */
-    fun range(start: Char, end: Char): RegularExpression
+    fun range(start: Char, end: Char) = SuperExpressive().range(start, end)
 
     /**
      * Assert the start of input, or the start of a line when [.lineByLine](#lineByLine) is used.
@@ -658,20 +544,7 @@ interface RegularExpression {
      * // yields:  "^hello"
      * ```
      */
-    fun startOfInput(): RegularExpression
-
-    /**
-     * Assert the end of input.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * string("hello").endOfInput()
-     *
-     * // yields:  "hello$"
-     * ```
-     */
-    fun endOfInput(): RegularExpression
+    fun startOfInput() = SuperExpressive().startOfInput()
 
     /**
      * Matches the exact string `s`.
@@ -684,203 +557,7 @@ interface RegularExpression {
      * // yields:  "hello"
      * ```
      */
-    fun string(s: String): RegularExpression
-
-    /**
-     * Matches a `\t` character.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * tab()
-     *
-     * // yields:  "\t"
-     * ```
-     *
-     * @return the updated expression
-     */
-    fun tab(): RegularExpression
-
-    /**
-     * Matches any whitespace character, including the special whitespace characters: `\r\n\t\f\v`.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * whitespaceChar()
-     *
-     * // yields:  "\s"
-     * ```
-     *
-     * @return the updated expression
-     */
-    fun whitespaceChar(): RegularExpression
-
-    /**
-     * Matches any alpha-numeric (`a-z, A-Z, 0-9`) characters, as well as `_`.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * word()
-     *
-     * // yields:  "\w"
-     * ```
-     *
-     * @return the updated expression
-     */
-    fun word(): RegularExpression
-
-    /**
-     * Matches (without consuming any characters) immediately between a character matched by
-     * [.word](#word) and a character not matched by [.word](#word) (in either order).
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * digit().wordBoundary()
-     *
-     * // yields:  "\d\b"
-     * ```
-     *
-     * @return the updated expression
-     */
-    fun wordBoundary(): RegularExpression
-
-    /**
-     * Assert that the proceeding element may not be matched, or may be matched multiple times.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * zeroOrMore { digit() }
-     *
-     * // yields:  "\d*"
-     *
-     * ```
-     */
-    fun zeroOrMore(expression: RegularExpression.() -> RegularExpression): RegularExpression
-
-    /**
-     * Assert that the proceeding element may not be matched, or may be matched multiple times, but
-     * as few times as possible.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * zeroOrMoreLazy { digit() }
-     *
-     * // yields:  "\d*?"
-     * ```
-     */
-    fun zeroOrMoreLazy(expression: RegularExpression.() -> RegularExpression): RegularExpression
-
-    /**
-     * Assert that the proceeding element will be matched exactly `n` times.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * exactly(5) { digit() }
-     *
-     * // yields:  "\d{5}"
-     * ```
-     */
-    fun exactly(
-        count: Int,
-        expression: RegularExpression.() -> RegularExpression
-    ): RegularExpression
-
-    /**
-     * Assert that the proceeding element will be matched at least `n` times.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * atLeast(5) { digit() }
-     *
-     * // yields:  "\d{5,}"
-     * ```
-     */
-    fun atLeast(
-        count: Int,
-        expression: RegularExpression.() -> RegularExpression
-    ): RegularExpression
-
-    /**
-     * Assert that the proceeding element will be matched somewhere between `x` and `y` times.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * between(3, 5) { digit() }
-     *
-     * // yields:  "\d{3,5}"
-     * ```
-     */
-    fun between(
-        x: Int,
-        y: Int,
-        expression: RegularExpression.() -> RegularExpression
-    ): RegularExpression
-
-    /**
-     * Assert that the proceeding element will be matched somewhere between `x` and `y` times, but
-     * as few times as possible.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * betweenLazy(3, 5) { digit() }
-     *
-     * // yields:  "\d{3,5}?"
-     * ```
-     */
-    fun betweenLazy(
-        x: Int,
-        y: Int,
-        expression: RegularExpression.() -> RegularExpression
-    ): RegularExpression
-
-    /**
-     * Matches any of the characters in the provided string `chars`.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * anyOfChars("aeiou")
-     *
-     * // yields:  "[aeiou]"
-     * ```
-     */
-    fun anyOfChars(chars: String): RegularExpression
-
-    /**
-     * Matches any character except those in the provided string `chars`.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * anythingButChars("aeiou")
-     *
-     * // yields:  "[^aeiou]"
-     * ```
-     */
-    fun anythingButChars(chars: String): RegularExpression
-
-    /**
-     * Matches any character except those that would be captured by the [.range](#rangea-b)
-     * specified by `a` and `b`.
-     *
-     * **Example**
-     *
-     * ```kotlin
-     * anythingButRange(0, 9)
-     *
-     * // yields:  "[^0-9]"
-     * ```
-     */
-    fun anythingButRange(start: Char, end: Char): RegularExpression
+    fun string(s: String) = SuperExpressive().string(s)
 
     /**
      * Matches another SuperExpressive instance inline. Can be used to create libraries, or to
@@ -903,7 +580,100 @@ interface RegularExpression {
     fun subexpression(
         expr: RegularExpression,
         optionsLambda: SubexpressionOptions.() -> Unit = {}
-    ): RegularExpression
+    ) = SuperExpressive().subexpression(expr, optionsLambda)
+
+    /**
+     * Matches a `\t` character.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * tab()
+     *
+     * // yields:  "\t"
+     * ```
+     *
+     * @return the updated expression
+     */
+    fun tab() = SuperExpressive().tab()
+
+    fun unixLines() = SuperExpressive().unixLines()
+
+    /**
+     * Matches any whitespace character, including the special whitespace characters: `\r\n\t\f\v`.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * whitespaceChar()
+     *
+     * // yields:  "\s"
+     * ```
+     *
+     * @return the updated expression
+     */
+    fun whitespaceChar() = SuperExpressive().whitespaceChar()
+
+    /**
+     * Matches any alpha-numeric (`a-z, A-Z, 0-9`) characters, as well as `_`.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * word()
+     *
+     * // yields:  "\w"
+     * ```
+     *
+     * @return the updated expression
+     */
+    fun word() = SuperExpressive().word()
+
+    /**
+     * Matches (without consuming any characters) immediately between a character matched by
+     * [.word](#word) and a character not matched by [.word](#word) (in either order).
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * digit().wordBoundary()
+     *
+     * // yields:  "\d\b"
+     * ```
+     *
+     * @return the updated expression
+     */
+    fun wordBoundary() = SuperExpressive().wordBoundary()
+
+    /**
+     * Assert that the proceeding element may not be matched, or may be matched multiple times.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * zeroOrMore { digit() }
+     *
+     * // yields:  "\d*"
+     *
+     * ```
+     */
+    fun zeroOrMore(expression: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().zeroOrMore(expression)
+
+    /**
+     * Assert that the proceeding element may not be matched, or may be matched multiple times, but
+     * as few times as possible.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * zeroOrMoreLazy { digit() }
+     *
+     * // yields:  "\d*?"
+     * ```
+     */
+    fun zeroOrMoreLazy(expression: RegularExpression.() -> RegularExpression) =
+        SuperExpressive().zeroOrMoreLazy(expression)
 }
 
 /** Returns this [RegularExpression] as a kotlin [Regex] */
