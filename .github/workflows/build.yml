@@ -40,7 +40,7 @@ jobs:
   Release:
     needs:
       - Build
-      - Meta
+      - Preflight
     if: needs.Meta.outputs.releasable == 'true'
     uses: evanchooly/workflows/.github/workflows/jreleaser.yml@master
     with:
