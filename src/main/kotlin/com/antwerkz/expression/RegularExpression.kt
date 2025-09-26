@@ -579,7 +579,7 @@ interface RegularExpression {
      */
     fun subexpression(
         expr: RegularExpression,
-        optionsLambda: SubexpressionOptions.() -> Unit = {}
+        optionsLambda: SubexpressionOptions.() -> Unit = {},
     ) = SuperExpressive().subexpression(expr, optionsLambda)
 
     /**

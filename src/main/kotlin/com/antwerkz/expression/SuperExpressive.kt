@@ -120,7 +120,7 @@ internal class SuperExpressive : RegularExpression {
 
     override fun namedCapture(
         name: String,
-        body: RegularExpression.() -> RegularExpression
+        body: RegularExpression.() -> RegularExpression,
     ): RegularExpression {
         return (with {
                     trackNamedGroup(name)
@@ -223,7 +223,7 @@ internal class SuperExpressive : RegularExpression {
 
     private fun frameCreatingElement(
         type: Type,
-        body: RegularExpression.() -> RegularExpression
+        body: RegularExpression.() -> RegularExpression,
     ): RegularExpression {
         return (with { state.stack.add(StackFrame(type)) }.body() as SuperExpressive).end()
     }
@@ -249,7 +249,7 @@ internal class SuperExpressive : RegularExpression {
 
     private fun quantifierElement(
         type: Type,
-        expression: RegularExpression.() -> RegularExpression
+        expression: RegularExpression.() -> RegularExpression,
     ) = with { getCurrentFrame().quantifier(type) }.expression()
 
     override fun exactly(count: Int, expression: RegularExpression.() -> RegularExpression) =
@@ -261,7 +261,7 @@ internal class SuperExpressive : RegularExpression {
     override fun between(
         x: Int,
         y: Int,
-        expression: RegularExpression.() -> RegularExpression
+        expression: RegularExpression.() -> RegularExpression,
     ): RegularExpression {
         if (x >= y) {
             throw IllegalArgumentException("x ($x) must be less than y ($y)")
@@ -273,7 +273,7 @@ internal class SuperExpressive : RegularExpression {
     override fun betweenLazy(
         x: Int,
         y: Int,
-        expression: RegularExpression.() -> RegularExpression
+        expression: RegularExpression.() -> RegularExpression,
     ): RegularExpression {
         if (x >= y) {
             throw IllegalArgumentException("x ($x) must be less than y ($y)")
@@ -316,7 +316,7 @@ internal class SuperExpressive : RegularExpression {
         el: Type,
         options: SubexpressionOptions,
         parent: SuperExpressive,
-        incrementCaptureGroups: () -> Int
+        incrementCaptureGroups: () -> Int,
     ): Type {
         val nextEl: Type = el.copy()
 
@@ -346,7 +346,7 @@ internal class SuperExpressive : RegularExpression {
                         nextEl.value as Type,
                         options,
                         parent,
-                        incrementCaptureGroups
+                        incrementCaptureGroups,
                     )
             } else {
                 nextEl.value =
@@ -398,7 +398,7 @@ internal class SuperExpressive : RegularExpression {
 
     override fun subexpression(
         expr: RegularExpression,
-        optionsLambda: SubexpressionOptions.() -> Unit
+        optionsLambda: SubexpressionOptions.() -> Unit,
     ): RegularExpression {
         if ((expr as SuperExpressive).state.stack.size != 1) {
             throw java.lang.IllegalArgumentException(

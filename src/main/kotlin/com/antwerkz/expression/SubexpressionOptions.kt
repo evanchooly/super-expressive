@@ -11,7 +11,7 @@ package com.antwerkz.expression
 data class SubexpressionOptions(
     var ignoreFlags: Boolean = true,
     var namespace: String = "",
-    var ignoreStartAndEnd: Boolean = true
+    var ignoreStartAndEnd: Boolean = true,
 ) {
     companion object {
         operator fun invoke(init: SubexpressionOptions.() -> Unit): SubexpressionOptions {
