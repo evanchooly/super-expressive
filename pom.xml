@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.antwerkz</groupId>
         <artifactId>antwerkz-parent</artifactId>
-        <version>34</version>
+        <version>63</version>
     </parent>
 
     <groupId>com.antwerkz.super-expressive</groupId>
     <artifactId>super-expressive</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.3.2-SNAPSHOT</version>
 
     <name>super-expressive</name>
     <url>https://github.com/evanchooly/super-expressive</url>
@@ -24,7 +24,6 @@
     </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <nexus.url>https://oss.sonatype.org</nexus.url>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
@@ -32,17 +31,6 @@
     <build>
         <defaultGoal>install</defaultGoal>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>central</id>
-            <url>${nexus.url}/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>central</id>
-            <url>${nexus.url}/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
