@@ -32,7 +32,7 @@ jobs:
   Build:
     strategy:
       matrix:
-        java: [ 17, 25 ]
+        java: [ 17, 24 ]
     uses: evanchooly/workflows/.github/workflows/build.yml@master
     with:
       java: ${{ matrix.java }}
@@ -41,7 +41,7 @@ jobs:
     needs:
       - Build
       - Preflight
-    if: needs.Meta.outputs.releasable == 'true'
+    if: needs.Preflight.outputs.releasable == 'true'
     uses: evanchooly/workflows/.github/workflows/jreleaser.yml@master
     with:
       java: 17
