@@ -102,26 +102,26 @@ class SuperExpressiveTest {
 
         testRegexEquality(
             """(?:hello|[\d\w\.#])""",
-            anyOf { string("hello").digit().word().char('.').char('#') }
+            anyOf { string("hello").digit().word().char('.').char('#') },
         )
 
         testRegexEquality(
             "[a-zA-Z0-9\\.#]",
-            anyOf { range('a', 'z').range('A', 'Z').range('0', '9').char('.').char('#') }
+            anyOf { range('a', 'z').range('A', 'Z').range('0', '9').char('.').char('#') },
         )
 
         testRegexEquality(
             "(?:XXX|[a-zA-Z0-9\\.#])",
             anyOf {
                 range('a', 'z').range('A', 'Z').range('0', '9').char('.').char('#').string("XXX")
-            }
+            },
         )
 
         testRegexEquality("(hello \\w!)", capture { string("hello ").word().char('!') })
 
         testRegexEquality(
             "(?<ThisIsTheName>hello \\w!)",
-            namedCapture("ThisIsTheName") { string("hello ").word().char('!') }
+            namedCapture("ThisIsTheName") { string("hello ").word().char('!') },
         )
 
         testErrorCondition(
@@ -140,18 +140,18 @@ class SuperExpressiveTest {
             "(?<backRef>hello \\w!)\\k<backRef>",
             SuperExpressive()
                 .namedCapture("backRef") { string("hello ").word().char('!') }
-                .namedBackreference("backRef")
+                .namedBackreference("backRef"),
         )
 
         testErrorCondition(
-            "no capture group called 'not_here' exists (create one with .namedCapture())",
+            "no capture group called 'not_here' exists (create one with .namedCapture())"
         ) {
             namedBackreference("not_here")
         }
 
         testRegexEquality(
             "(hello \\w!)\\1",
-            capture { string("hello ").word().char('!') }.backreference(1)
+            capture { string("hello ").word().char('!') }.backreference(1),
         )
 
         testRegexEquality("(?:hello \\w!)", group { string("hello ").word().char('!') })
@@ -191,7 +191,7 @@ class SuperExpressiveTest {
     fun testFusing() {
         testRegexEquality(
             """(?:hello|[\d\w\.#])""",
-            anyOf { string("hello").digit().word().char('.').char('#') }
+            anyOf { string("hello").digit().word().char('.').char('#') },
         )
     }
 
@@ -204,7 +204,7 @@ class SuperExpressiveTest {
                 .atLeast(3) { digit() }
                 .subexpression(simpleSubExpression)
                 .range('0', '9')
-                .endOfInput()
+                .endOfInput(),
         )
     }
 
@@ -225,7 +225,7 @@ class SuperExpressiveTest {
                 .capture { atLeast(3) { digit() } }
                 .subexpression(firstLayerSubexpression)
                 .backreference(1)
-                .range('0', '9')
+                .range('0', '9'),
         )
     }
 
@@ -237,7 +237,7 @@ class SuperExpressiveTest {
                 .capture { atLeast(3) { digit() } }
                 .subexpression(indexedBackreferenceSubexpression)
                 .backreference(1)
-                .range('0', '9')
+                .range('0', '9'),
         )
     }
 
@@ -270,7 +270,7 @@ class SuperExpressiveTest {
             SuperExpressive()
                 .atLeast(3) { digit() }
                 .subexpression(namedCaptureSubExpression) { namespace = "yolo" }
-                .range('0', '9')
+                .range('0', '9'),
         )
     }
 
@@ -281,7 +281,7 @@ class SuperExpressiveTest {
             SuperExpressive()
                 .atLeast(3) { digit() }
                 .subexpression(namedCaptureSubExpression)
-                .range('0', '9')
+                .range('0', '9'),
         )
     }
 
@@ -315,7 +315,7 @@ class SuperExpressiveTest {
                 .atLeast(3) { digit() }
                 .subexpression(startEndSubExpression)
                 .range('0', '9'),
-            setOf()
+            setOf(),
         )
     }
 
@@ -326,7 +326,7 @@ class SuperExpressiveTest {
             SuperExpressive()
                 .atLeast(3) { digit() }
                 .subexpression(startEndSubExpression) { ignoreStartAndEnd = false }
-                .range('0', '9')
+                .range('0', '9'),
         )
     }
 
@@ -340,7 +340,7 @@ class SuperExpressiveTest {
                 .subexpression(flagsSubExpression)
                 .range('0', '9')
                 .endOfInput(),
-            setOf()
+            setOf(),
         )
     }
 
@@ -354,7 +354,7 @@ class SuperExpressiveTest {
                 .subexpression(flagsSubExpression) { ignoreFlags = false }
                 .range('0', '9')
                 .endOfInput(),
-            setOf(*RegexOption.values())
+            setOf(*RegexOption.values()),
         )
     }
 
@@ -367,7 +367,7 @@ class SuperExpressiveTest {
                 .atLeast(3) { digit() }
                 .oneOrMore { subexpression(simpleSubExpression) }
                 .range('0', '9')
-                .endOfInput()
+                .endOfInput(),
         )
     }
 
@@ -379,7 +379,7 @@ class SuperExpressiveTest {
     private fun testRegexEquality(
         expected: String,
         superExpression: RegularExpression,
-        flags: Set<RegexOption> = setOf()
+        flags: Set<RegexOption> = setOf(),
     ) {
         testRegexEqualityOnly(expected, superExpression)
         assertEquals(superExpression.toRegex().options, flags)

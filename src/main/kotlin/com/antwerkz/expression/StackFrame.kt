@@ -5,14 +5,14 @@ import com.antwerkz.expression.types.Type
 internal data class StackFrame(
     val type: Type,
     var quantifier: Type? = null,
-    var elements: MutableList<Type> = mutableListOf()
+    var elements: MutableList<Type> = mutableListOf(),
 ) {
     constructor(
         original: StackFrame
     ) : this(
         original.type.copy(),
         original.quantifier?.copy(),
-        original.elements.map { it.copy() }.toMutableList()
+        original.elements.map { it.copy() }.toMutableList(),
     )
 
     fun quantifier(quantifier: Type) {

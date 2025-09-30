@@ -120,7 +120,7 @@ interface RegularExpression {
 
         override fun namedCapture(
             name: String,
-            body: RegularExpression.() -> RegularExpression
+            body: RegularExpression.() -> RegularExpression,
         ): RegularExpression {
             return SuperExpressive().namedCapture(name, body)
         }
@@ -210,14 +210,14 @@ interface RegularExpression {
 
         override fun exactly(
             count: Int,
-            expression: RegularExpression.() -> RegularExpression
+            expression: RegularExpression.() -> RegularExpression,
         ): RegularExpression {
             return SuperExpressive().exactly(count, expression)
         }
 
         override fun atLeast(
             count: Int,
-            expression: RegularExpression.() -> RegularExpression
+            expression: RegularExpression.() -> RegularExpression,
         ): RegularExpression {
             return SuperExpressive().atLeast(count, expression)
         }
@@ -225,7 +225,7 @@ interface RegularExpression {
         override fun between(
             x: Int,
             y: Int,
-            expression: RegularExpression.() -> RegularExpression
+            expression: RegularExpression.() -> RegularExpression,
         ): RegularExpression {
             return SuperExpressive().between(x, y, expression)
         }
@@ -233,7 +233,7 @@ interface RegularExpression {
         override fun betweenLazy(
             x: Int,
             y: Int,
-            expression: RegularExpression.() -> RegularExpression
+            expression: RegularExpression.() -> RegularExpression,
         ): RegularExpression {
             return SuperExpressive().betweenLazy(x, y, expression)
         }
@@ -252,7 +252,7 @@ interface RegularExpression {
 
         override fun subexpression(
             expr: RegularExpression,
-            optionsLambda: SubexpressionOptions.() -> Unit
+            optionsLambda: SubexpressionOptions.() -> Unit,
         ): RegularExpression {
             return SuperExpressive().subexpression(expr, optionsLambda)
         }
@@ -513,7 +513,7 @@ interface RegularExpression {
      */
     fun namedCapture(
         name: String,
-        body: RegularExpression.() -> RegularExpression
+        body: RegularExpression.() -> RegularExpression,
     ): RegularExpression
 
     /**
@@ -788,7 +788,7 @@ interface RegularExpression {
      */
     fun exactly(
         count: Int,
-        expression: RegularExpression.() -> RegularExpression
+        expression: RegularExpression.() -> RegularExpression,
     ): RegularExpression
 
     /**
@@ -804,7 +804,7 @@ interface RegularExpression {
      */
     fun atLeast(
         count: Int,
-        expression: RegularExpression.() -> RegularExpression
+        expression: RegularExpression.() -> RegularExpression,
     ): RegularExpression
 
     /**
@@ -821,7 +821,7 @@ interface RegularExpression {
     fun between(
         x: Int,
         y: Int,
-        expression: RegularExpression.() -> RegularExpression
+        expression: RegularExpression.() -> RegularExpression,
     ): RegularExpression
 
     /**
@@ -839,7 +839,7 @@ interface RegularExpression {
     fun betweenLazy(
         x: Int,
         y: Int,
-        expression: RegularExpression.() -> RegularExpression
+        expression: RegularExpression.() -> RegularExpression,
     ): RegularExpression
 
     /**
@@ -902,7 +902,7 @@ interface RegularExpression {
      */
     fun subexpression(
         expr: RegularExpression,
-        optionsLambda: SubexpressionOptions.() -> Unit = {}
+        optionsLambda: SubexpressionOptions.() -> Unit = {},
     ): RegularExpression
 }
 
