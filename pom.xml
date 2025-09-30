@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.antwerkz</groupId>
         <artifactId>antwerkz-parent</artifactId>
-        <version>65-SNAPSHOT</version>
+        <version>68</version>
     </parent>
 
     <groupId>com.antwerkz.super-expressive</groupId>
     <artifactId>super-expressive</artifactId>
-    <version>0.3.3-SNAPSHOT</version>
+    <version>0.3.3</version>
 
     <name>super-expressive</name>
     <url>https://github.com/evanchooly/super-expressive</url>
