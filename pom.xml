@@ -12,7 +12,7 @@
 
     <groupId>com.antwerkz.super-expressive</groupId>
     <artifactId>super-expressive</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3-SNAPSHOT</version>
 
     <name>super-expressive</name>
     <url>https://github.com/evanchooly/super-expressive</url>
